@@ -52,7 +52,6 @@
 
 /* Variables -----------------------------------------------------------------*/
 osThreadId defaultTaskHandle;
-osThreadId U2RXHandle;
 osThreadId CMDQHandle;
 osThreadId U2TXHandle;
 osThreadId SPITxIrqHandle;
@@ -74,7 +73,6 @@ uint8_t CPosition = 0x00;
 
 /* Function prototypes -------------------------------------------------------*/
 void StartDefaultTask(void const * argument);
-void Usart2Rx(void const * argument);
 void CmdProcessQueue(void const * argument);
 void Usart2Tx(void const * argument);
 void SPITxIrqStatus(void const * argument);
@@ -120,10 +118,6 @@ void MX_FREERTOS_Init(void) {
   /* definition and creation of defaultTask */
   osThreadDef(defaultTask, StartDefaultTask, osPriorityBelowNormal, 0, 128);
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
-
-  /* definition and creation of U2RX */
-  osThreadDef(U2RX, Usart2Rx, osPriorityBelowNormal, 0, 256);
-  U2RXHandle = osThreadCreate(osThread(U2RX), NULL);
 
   /* definition and creation of CMDQ */
   osThreadDef(CMDQ, CmdProcessQueue, osPriorityAboveNormal, 0, 512);
@@ -172,22 +166,6 @@ void StartDefaultTask(void const * argument)
     osDelay(500);
   }
   /* USER CODE END StartDefaultTask */
-}
-
-/* Usart2Rx function */
-void Usart2Rx(void const * argument)
-{
-  /* USER CODE BEGIN Usart2Rx */
-  /* Infinite loop */
-  for(;;)
-  {
-    if(HAL_UART_Receive_IT(&huart2, &Usart2Char, 1)==HAL_OK)
-    {
-//      HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-    }
-    taskYIELD();
-  }
-  /* USER CODE END Usart2Rx */
 }
 
 /* CmdProcessQueue function */
@@ -262,9 +240,11 @@ void SPIRxIrqStatus(void const * argument)
 }
 
 /* USER CODE BEGIN Application */
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle){
-  if (UartHandle->Instance == USART2) {
-    htim10.Instance->CNT = 0x00;
+void USART2_IRQHandler(void)
+{
+  if((__HAL_UART_GET_FLAG(&huart2, UART_FLAG_RXNE) != RESET) && (__HAL_UART_GET_IT_SOURCE(&huart2, UART_IT_RXNE) != RESET))
+  {
+    Usart2Char = (uint8_t)(huart2.Instance->DR & (uint8_t)0x00FF);
     if (Usart2Char == AS_CMD_END_CHAR) {
       AddCMDToQueue();
     } else {
@@ -276,8 +256,13 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *UartHandle){
         HAL_UART_Transmit(&huart2, &ErrorMsg[0], sizeof(ErrorMsg)-1, 10);
       }
     }
-    HAL_UART_Receive_IT(&huart2, &Usart2Char, 1); 
   }
+
+  if((__HAL_UART_GET_FLAG(&huart2, UART_FLAG_IDLE) != RESET) && (__HAL_UART_GET_IT_SOURCE(&huart2, UART_IT_IDLE) != RESET))
+  {
+    AddCMDToQueue();
+  }
+  __HAL_UART_CLEAR_PEFLAG(&huart2);
 }
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
@@ -292,13 +277,13 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
     printf("Uncknown IT, Pin: %x!\n", GPIO_Pin);
   }
 }
-
+/*
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
   if (htim->Instance == TIM10) {
     AddCMDToQueue();
   }
 }
-
+*/
 void AddCMDToQueue (void) {
   if (CPosition < 5) {
       CPosition = 0x00;
@@ -323,9 +308,7 @@ void AddCMDToQueue (void) {
         //Error, the queue if full!!!
         //TODO: handle this error
         printf("Error to add to Q!\n");
-      }/* else {
-        HAL_UART_Transmit_DMA(&huart2, (uint8_t *) "OK\n", 10);
-      }*/
+      }
 
     }
   }

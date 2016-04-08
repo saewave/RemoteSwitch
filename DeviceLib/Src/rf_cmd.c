@@ -5,8 +5,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#define DEVICE_TYPE 0x02
-
 void ProcessData(uint8_t *Data, uint8_t Length) {
   uint8_t HUBAddress[5] = {0x00};
   uint8_t Header  = Data[0];

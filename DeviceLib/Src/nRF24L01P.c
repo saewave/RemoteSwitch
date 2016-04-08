@@ -52,7 +52,7 @@ void nRF24_RXMode() {
   nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_EN_RXADDR,0x1F); // Enable data pipe 0-1
   nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_RF_CH,0x7C); // Set frequency channel 124 (2.524MHz)
 //  nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_RX_PW_P0,RX_PAYLOAD); // Set RX payload length (10 bytes)
-  nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_RF_SETUP,0x23); // Setup: 1Mbps, 0dBm, LNA off
+  nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_RF_SETUP,0x26); // Setup: 1Mbps, 0dBm, LNA off
   nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_CONFIG,0x0F); // Config: CRC on (2 bytes), Power UP, RX/TX ctl = PRX
   CE_HIGH();
 }

@@ -57,7 +57,7 @@ void nRF24_TXMode(SPI_HandleTypeDef* hspi) {
   nRF24_RWReg(hspi, CHIP_Tx, nRF24_CMD_WREG | nRF24_REG_EN_AA,0x1F); // Enable auto acknowledgement for data pipe 1
   nRF24_RWReg(hspi, CHIP_Tx, nRF24_CMD_WREG | nRF24_REG_SETUP_RETR,0x1A); // Auto retransmit: wait 500us, 10 retries
   nRF24_RWReg(hspi, CHIP_Tx, nRF24_CMD_WREG | nRF24_REG_RF_CH,0x7C); // Set frequency channel 110 (2.510MHz)
-  nRF24_RWReg(hspi, CHIP_Tx, nRF24_CMD_WREG | nRF24_REG_RF_SETUP,0x23); // Setup: 250Kbps, 0dBm, LNA off
+  nRF24_RWReg(hspi, CHIP_Tx, nRF24_CMD_WREG | nRF24_REG_RF_SETUP,0x26); // Setup: 250Kbps, 0dBm, LNA off
   nRF24_RWReg(hspi, CHIP_Tx, nRF24_CMD_WREG | nRF24_REG_CONFIG,0x0E); // Config: CRC on (2 bytes), Power UP, RX/TX ctl = PTX
   CE_HIGH(CHIP_Tx);
 }

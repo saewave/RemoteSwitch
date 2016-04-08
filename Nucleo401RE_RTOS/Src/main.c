@@ -97,6 +97,11 @@ int main(void)
   /* USER CODE BEGIN 2 */
   
   HAL_IWDG_Start(&hiwdg);
+  
+  /* Enable the UART Data Register not empty Interrupt */
+  __HAL_UART_ENABLE_IT(&huart2, UART_IT_RXNE);
+  __HAL_UART_ENABLE_IT(&huart2, UART_IT_IDLE);
+  
   /*
   uint32_t g_ADCValue;
   HAL_ADC_Start(&hadc1);
@@ -123,7 +128,7 @@ int main(void)
 
   printf("All Ready!\n\n");
   
-  HAL_TIM_Base_Start_IT(&htim10);
+//  HAL_TIM_Base_Start_IT(&htim10);
 //  HAL_TIM_Base_Start_IT(&htim11);
   /* USER CODE END 2 */
 
@@ -172,7 +177,8 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.PLL.PLLQ = 7;
   HAL_RCC_OscConfig(&RCC_OscInitStruct);
 
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_SYSCLK|RCC_CLOCKTYPE_PCLK1;
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;

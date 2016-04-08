@@ -104,6 +104,12 @@ int main(void)
 //  printf("SysClockFreq: %08x\n", MCUFreq);
   HAL_TIM_Base_Start(&htim14);
   HAL_TIM_PWM_Start(&htim14, TIM_CHANNEL_1);
+  
+  HAL_TIM_Base_Start(&htim1);
+  HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2 | TIM_CHANNEL_3);
+  
+  HAL_TIM_Base_Start(&htim3);
+  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4);
 
   if (configREAD_ADDR_ON_START) {
     readConfig();
@@ -127,14 +133,13 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    Flags = nRF24_HandleStatus();
-//    printf("checked!\n");
-    HAL_Delay(500);
-/*    if (HandleStatusNeeded) {
+    if (HandleStatusNeeded) {
       HandleStatusNeeded = 0x00;
       Flags = nRF24_HandleStatus();
     }
-    if (HAL_GPIO_ReadPin(SET_BTN_GPIO_Port, SET_BTN_Pin) == GPIO_PIN_RESET) {
+//    Flags = nRF24_HandleStatus();
+//    HAL_Delay(1500);
+/*    if (HAL_GPIO_ReadPin(SET_BTN_GPIO_Port, SET_BTN_Pin) == GPIO_PIN_RESET) {
       if (SetupInterval == 0) {
         SetupInterval = HAL_GetTick();
         nRF24_SetDefaultDeviceAddress();
