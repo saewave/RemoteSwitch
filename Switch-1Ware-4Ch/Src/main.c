@@ -92,6 +92,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
   printf("Compiled in: %s at %s!\n\n", CompileDate, CompileTime);
   
+  HAL_Delay(100);
   if (configREAD_ADDR_ON_START) {
     readConfig();
   }

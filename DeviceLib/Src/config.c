@@ -9,10 +9,14 @@ void readConfig(void) {
 //    printf("Confing not set!\n");
     return;
   }
+  printf("Saved addr:\n");
   for (int i=0; i<10;i+=2) {
     Config[i] = (*(__IO uint8_t*)(configFLASH_CFG_ADDR+i+1));
     Config[i+1] = (*(__IO uint8_t*)(configFLASH_CFG_ADDR+i));
+    printf("%x ", Config[i]);
+    printf("%x ", Config[i+1]);
   }
+  printf("\n");
   nRF24_SetDeviceAddress(&Config[0], 1);
   nRF24_SetHUBAddress(&Config[5]);
 }

@@ -136,6 +136,7 @@ void rfSaveDevices(void) {
   while(FLASH->SR & FLASH_SR_BSY) {};
 
   dLink Cur = rfDevices;
+
   uint32_t Address = 0x08060000;
   while (Cur != NULL) {
     if (Cur->Type == NULL) {
@@ -213,16 +214,38 @@ void rfPingAllDevices(void) {
 void rfSendData(uint8_t Cmd, dLink Device, char *Parameters) {
   switch (Device->Type) {
     case rfDEVICE_TYPE_1 :
+    case rfDEVICE_TYPE_2 :
     {
-      int NewValue[5] = {0x00};
-
-      if (sscanf(Parameters, rfCMD_DATA_MASK_TYPE_1, &NewValue[0], &NewValue[1], &NewValue[2], &NewValue[3], &NewValue[4]) > 0) {
-        uint8_t Data[5] = {0x00};
-        for (int i = 0; i < 5; i++){
+      int NewValue[21] = {0x00};
+      int readVals = sscanf(Parameters, rfCMD_DATA_MASK, 
+                            &NewValue[0],
+                            &NewValue[1],
+                            &NewValue[2],
+                            &NewValue[3],
+                            &NewValue[4],
+                            &NewValue[5],
+                            &NewValue[6],
+                            &NewValue[7],
+                            &NewValue[8],
+                            &NewValue[9],
+                            &NewValue[10],
+                            &NewValue[11],
+                            &NewValue[12],
+                            &NewValue[13],
+                            &NewValue[14],
+                            &NewValue[15],
+                            &NewValue[16],
+                            &NewValue[17],
+                            &NewValue[18],
+                            &NewValue[19],
+                            &NewValue[20]);
+      if (readVals > 0) {
+        uint8_t Data[21] = {0x00};
+        for (int i = 0; i < readVals; i++){
           Data[i] = (uint8_t)NewValue[i];
 //          printf("NewValue: %03x\n", Data[i]);
         }
-        rfSendCommad(Cmd, Device->Address, &Data[0], 5, Device->Salt);
+        rfSendCommad(Cmd, Device->Address, &Data[0], readVals, Device->Salt);
       } else {
         QueueResponse((char *)"Error: Device address not set!\n\n");
       }

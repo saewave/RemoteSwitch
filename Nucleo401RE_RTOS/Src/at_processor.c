@@ -88,8 +88,9 @@ void ProcessATCommand(char *Data, uint8_t Length) {
   }
   
   if (strncmp(&Data[3], (char *) "LOAD_DEVICES", 12) == 0) {
-    QueueResponse((char *)"LOAD_DEVICES\nPlease wait...  ");
+    QueueResponse((char *)"LOAD_DEVICES\nPlease wait...  \n\n");
     rfLoadDevices();
+    rfListDevices();
     QueueResponse((char *)"Done!\n");
     CommandProcessed = 1;
   }

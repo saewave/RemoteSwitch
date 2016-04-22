@@ -17,7 +17,8 @@
 #define rfCMD_R_CONFIG          0x05
 
 #define rfDEVICE_TYPE_1         0x01
-#define rfCMD_DATA_MASK_TYPE_1  "%3d,%3d,%3d,%3d,%3d"   //  State: 0-100 up to 4 times, last value is period 0-255 * 10 ms (if PWM supported)
+#define rfDEVICE_TYPE_2         0x02
+#define rfCMD_DATA_MASK  "%3d,%3d,%3d,%3d,%3d,%3d,%3d,%3d,%3d,%3d,%3d,%3d,%3d,%3d,%3d,%3d,%3d,%3d,%3d,%3d,%3d"
 
 
 typedef struct Device *dLink;
