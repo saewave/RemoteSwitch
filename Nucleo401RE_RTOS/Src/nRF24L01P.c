@@ -121,7 +121,7 @@ void nRF24_RWReg(SPI_HandleTypeDef* hspi, uint8_t Chip, uint8_t Reg, uint8_t Dat
   uint8_t pBuf[2] = {Reg, Data};
   HAL_StatusTypeDef status = HAL_OK;
   CSN_LOW(Chip);
-  status = HAL_SPI_Transmit(hspi, (uint8_t*) &pBuf[0], 2, SPI_TIMEOUT);
+  status = HAL_SPI_Transmit(hspi, (uint8_t*) pBuf, 2, SPI_TIMEOUT);
   CSN_HIGH(Chip);
   for(int i=0;i<20;i++){};
 //  dxprintf("status: %x\n", status);

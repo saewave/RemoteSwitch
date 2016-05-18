@@ -193,7 +193,7 @@ void rfPingDevice(uint16_t Address) {
   }
   
   uint8_t Data[2] = {0x00, 0x01};
-  rfSendCommad(rfCMD_PING, Address, &Data[0], 2, Device->Salt);
+  rfSendCommad(rfCMD_PING, Address, Data, 2, Device->Salt);
 }
 
 void rfPingAllDevices(void) {
@@ -206,7 +206,7 @@ void rfPingAllDevices(void) {
   uint8_t Data[2] = {0x00, 0x01};
   while (Cur != NULL) {
 //    dxprintf("fd A: %x, P: %p, N: %p\n", Cur->Address, Cur->Prev, Cur->Next);
-    rfSendCommad(rfCMD_PING, Cur->Address, &Data[0], 2, Cur->Salt);
+    rfSendCommad(rfCMD_PING, Cur->Address, Data, 2, Cur->Salt);
     osDelay(20);
     Cur = Cur->Next;
   }
@@ -247,7 +247,7 @@ void rfSendData(uint8_t Cmd, dLink Device, char *Parameters) {
 //          dxprintf("NewValue: %03x\n", Data[i]);
         }
 //        dxprintf("** Cmd: %x\n", Cmd);
-        rfSendCommad(Cmd, Device->Address, &Data[0], readVals, Device->Salt);
+        rfSendCommad(Cmd, Device->Address, Data, readVals, Device->Salt);
       } else {
         QueueResponse((char *)"Error: Device address not set!\n\n");
       }
@@ -266,7 +266,7 @@ void rfSendCommad(uint8_t Command, uint16_t Address, uint8_t *Data, uint8_t Leng
     dxprintf("Data can't be length than 20 bytes");
   }
   uint8_t DeviceAddress[5] = {0x00};
-  nRF24_GetDeviceFullAddress(Address, &DeviceAddress[0]);
+  nRF24_GetDeviceFullAddress(Address, DeviceAddress);
   
   uint8_t *pBuf = ( uint8_t *) pvPortMalloc ( Length + 7 + 4 );
   pBuf[0] = 0x00;                           //Header, default 0x00
@@ -283,7 +283,7 @@ void rfSendCommad(uint8_t Command, uint16_t Address, uint8_t *Data, uint8_t Leng
     dxprintf("%x ", pBuf[i]);
   }
   dxprintf("\n\n");
-  nRF24_TXPacket(&hspi2, &DeviceAddress[0], &pBuf[0], Length+7);
+  nRF24_TXPacket(&hspi2, DeviceAddress, pBuf, Length+7);
   vPortFree(pBuf);
 }
 

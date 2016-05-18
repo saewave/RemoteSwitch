@@ -199,9 +199,9 @@ void CmdFindNewDevice (void) {
 
   *((uint32_t *)(Data+13)) = newDevice->Salt;
     
-  nRF24_TXPacket(&hspi2, &nRF24_DEVICE_CFG_addr[0], &Data[0], 17);
+  nRF24_TXPacket(&hspi2, nRF24_DEVICE_CFG_addr, Data, 17);
     
-//  rfSendCommad(rfCMD_DISCOVER, newDevice->Address, &Data[0], 11, newDevice->Salt);
+//  rfSendCommad(rfCMD_DISCOVER, newDevice->Address, Data, 11, newDevice->Salt);
 
 }
 
