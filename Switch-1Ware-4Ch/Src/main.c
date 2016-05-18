@@ -41,6 +41,7 @@
 #include "rf_cmd.h"
 //#include "rf_cmd_exec.h"
 #include "config.h"
+#include "1Ware.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -92,23 +93,34 @@ int main(void)
   /* USER CODE BEGIN 2 */
   printf("Compiled in: %s at %s!\n\n", CompileDate, CompileTime);
   
-  HAL_Delay(100);
+  OneWire_Init(GPIOA, GPIO_PIN_3);
+  
+  uint8_t pr = OneWire_CheckPresence();
+  printf("pr: %d\n", pr);
+  HAL_Delay(1);
+  OneWire_SendByte(0xCC);
+  OneWire_SendByte(0x4E);
+  OneWire_SendByte(0x4B);
+  OneWire_SendByte(0x46);
+  OneWire_SendByte(0x5F);
+
+  uint16_t Temperature = OneWireReadTemp();
+
+  printf("Temperature: %x\n", Temperature);
+  printf("Temperature: %2.2f\n", ((float)Temperature/16));
+  
   if (configREAD_ADDR_ON_START) {
     readConfig();
   }
   
   nRF24_SetSPIHandler(&hspi1);
-  HAL_Delay(20);
 
   CE_LOW();
   CSN_HIGH();
   
   nRF24_RXMode();
   nRF24_HandleStatus();
-
-  HAL_Delay(20);
-  CE_HIGH();
-
+//HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_9);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -119,6 +131,8 @@ int main(void)
       HandleStatusNeeded = 0x00;
       Flags = nRF24_HandleStatus();
     }
+//    printf("EXTI Pin:%d\n", HAL_GPIO_ReadPin(nRF24_IRQ_GPIO_Port, nRF24_IRQ_Pin));
+//    HAL_Delay(500);
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
@@ -140,15 +154,18 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSICalibrationValue = 16;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
+  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL12;
+  RCC_OscInitStruct.PLL.PREDIV = RCC_PREDIV_DIV1;
   HAL_RCC_OscConfig(&RCC_OscInitStruct);
 
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
-  HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0);
+  HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_1);
 
   PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART1;
   PeriphClkInit.Usart1ClockSelection = RCC_USART1CLKSOURCE_PCLK1;

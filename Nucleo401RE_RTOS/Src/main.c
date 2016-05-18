@@ -45,6 +45,7 @@
 /* USER CODE BEGIN Includes */
 #include "nRF24L01P.h"
 #include "timestamp.h"
+#include "xdebug.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -109,24 +110,24 @@ int main(void)
     if (HAL_ADC_PollForConversion(&hadc1, 1000) == HAL_OK)
         {
           g_ADCValue = HAL_ADC_GetValue(&hadc1);
-          printf("ADC: %02x\n", (uint8_t)g_ADCValue);
+          dxprintf("ADC: %02x\n", (uint8_t)g_ADCValue);
           HAL_ADC_Start(&hadc1);
         }
   }
   */
-  printf("Compiled in: %s at %s!\n\n", CompileDate, CompileTime);
+  dxprintf("Compiled in: %s at %s!\n\n", CompileDate, CompileTime);
   
   nRF24_Configure();
-  printf("nRF24_Configure\n");
+  dxprintf("nRF24_Configure\n");
   nRF24_TXMode(&hspi2);
-//  printf("nRF24_TXMode\n");
+//  dxprintf("nRF24_TXMode\n");
   nRF24_RXMode(&hspi2, 1);
-//  printf("nRF24_RXMode\n");
+//  dxprintf("nRF24_RXMode\n");
 
   nRF24_HandleStatus(&hspi2, CHIP_Tx);
-  printf("nRF24_HandleStatus\n");
+  dxprintf("nRF24_HandleStatus\n");
 
-  printf("All Ready!\n\n");
+  dxprintf("All Ready!\n\n");
   
 //  HAL_TIM_Base_Start_IT(&htim10);
 //  HAL_TIM_Base_Start_IT(&htim11);
@@ -215,7 +216,7 @@ void assert_failed(uint8_t* file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,*/
-    printf("Wrong parameters value: file %s on line %d\r\n", file, line);
+    dxprintf("Wrong parameters value: file %s on line %d\r\n", file, line);
   /* USER CODE END 6 */
 
 }

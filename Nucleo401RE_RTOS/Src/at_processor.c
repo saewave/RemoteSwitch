@@ -8,28 +8,29 @@
 #include "rf_device.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include "xdebug.h"
 
 extern osMessageQId U2TxQueueHandle;
 //extern SPI_HandleTypeDef hspi2;
 
 void ProcessATCommand(char *Data, uint8_t Length) {
-//  printf("CMD: %s\n", Data);
+//  dxprintf("CMD: %s\n", Data);
   char *Parameters = strchr(Data, ':');
   uint8_t ParametersPos = 0x00;
   if ( Parameters == NULL ) {
-//    printf("Len: %d, no params\n", Length);
+//    dxprintf("Len: %d, no params\n", Length);
   } else {
     ParametersPos = Parameters-Data;
-    printf("Len: %d, Params: %d\n", Length, ParametersPos);
+    dxprintf("Len: %d, Params: %d\n", Length, ParametersPos);
   }
   /*
   char *Command = (char*)malloc(ParametersPos - 3 + 1);
   if (Command == NULL) {
-    printf("Can't allocate memmory for command: %s\n", Data);
+    dxprintf("Can't allocate memmory for command: %s\n", Data);
     return;
   }
   strncpy(Command, &Data[3], (ParametersPos - 3));
-  printf("CMD: %s\n", Command);
+  dxprintf("CMD: %s\n", Command);
   */
   
   int CommandProcessed = 0;
@@ -133,12 +134,12 @@ void ProcessATCommand(char *Data, uint8_t Length) {
     strlcpy(Parameters, &Data[ParametersPos + 1], Length - ParametersPos);
     int DevAddress = 0x00;
     uint8_t ArgumentsLength = Length - ParametersPos - 6;
-//    printf("ArgumentsLength: %d\n", ArgumentsLength);
+//    dxprintf("ArgumentsLength: %d\n", ArgumentsLength);
     char Arguments[ArgumentsLength];
     if (sscanf(Parameters, "%4x:%s", &DevAddress, Arguments) > 0) {
-/*      printf("Adr: %4x\n", DevAddress);
+/*      dxprintf("Adr: %4x\n", DevAddress);
       for (int i=0; i<ArgumentsLength; i++) {
-        printf("%c\n", Arguments[i]);
+        dxprintf("%c\n", Arguments[i]);
       }*/
       dLink Device = rfGetDevice(DevAddress);
       if (Device == NULL) {
@@ -212,7 +213,7 @@ void QueueResponse (char *Response) {
   uint8_t Length = strlen(Response);
   uint8_t * Buf = (uint8_t*)pvPortMalloc(Length);
   if (Buf == NULL) {
-    printf("Error: can't allocate memmory!\n");
+    dxprintf("Error: can't allocate memmory!\n");
   } else {
     memcpy(Buf, Response, Length);
     xCmdResponse qCmdResponse;
@@ -222,7 +223,7 @@ void QueueResponse (char *Response) {
     if ( xQueueSend( U2TxQueueHandle, &(qCmdResponse), portMAX_DELAY) != pdPASS ) {
       //Error, the queue if full!!!
       //TODO: handle this error
-      printf("Error to add to U2TxQueue!\n");
+      dxprintf("Error to add to U2TxQueue!\n");
     }
 //    free(Buf);
   }

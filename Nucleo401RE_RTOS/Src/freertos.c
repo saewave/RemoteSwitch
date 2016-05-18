@@ -48,6 +48,7 @@
 #include "tim.h"
 #include "iwdg.h"
 #include "config.h"
+#include "xdebug.h"
 /* USER CODE END Includes */
 
 /* Variables -----------------------------------------------------------------*/
@@ -197,7 +198,7 @@ void Usart2Tx(void const * argument)
   for(;;)
   {
     if (xQueueReceive( U2TxQueueHandle, &qCmdResponse, portMAX_DELAY)) {
-//      printf("=%s\n", qCmdResponse.cData);
+//      dxprintf("=%s\n", qCmdResponse.cData);
       HAL_StatusTypeDef Status;
       do {
         Status = HAL_UART_Transmit(&huart2, qCmdResponse.cData, qCmdResponse.cLength, 100);
@@ -268,13 +269,13 @@ void USART2_IRQHandler(void)
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
   portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;
   if (GPIO_Pin == GPIO_PIN_13) {
-    printf("Button... But for what?\n");
+    dxprintf("Button... But for what?\n");
   } else if (GPIO_Pin == T_IRQ_Pin) {
     xSemaphoreGiveFromISR( nRFTxStatusHandle, &xHigherPriorityTaskWoken );
   } else if (GPIO_Pin == R_IRQ_Pin) {
     xSemaphoreGiveFromISR( nRFRxStatusHandle, &xHigherPriorityTaskWoken );
   } else {
-    printf("Uncknown IT, Pin: %x!\n", GPIO_Pin);
+    dxprintf("Uncknown IT, Pin: %x!\n", GPIO_Pin);
   }
 }
 /*
@@ -302,12 +303,12 @@ void AddCMDToQueue (void) {
       qCmd.cLength = CPosition;
       qCmd.cData = Buf;
       CPosition = 0x00;
-//          printf("q: %s, L: %d, P: %p, B: %p\n", qCmd.cData, qCmd.cLength, qCmd.cData, Buf);
+//          dxprintf("q: %s, L: %d, P: %p, B: %p\n", qCmd.cData, qCmd.cLength, qCmd.cData, Buf);
       BaseType_t xHigherPriorityTaskWoken = pdFALSE;
       if ( xQueueSendFromISR( CmdQueueHandle, &qCmd, &xHigherPriorityTaskWoken) != pdPASS ) {
         //Error, the queue if full!!!
         //TODO: handle this error
-        printf("Error to add to Q!\n");
+        dxprintf("Error to add to Q!\n");
       }
 
     }

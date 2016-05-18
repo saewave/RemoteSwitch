@@ -6,19 +6,20 @@
 #include "nRF24L01P.h"
 #include "spi.h"
 #include "cmsis_os.h"
+#include "xdebug.h"
 
 dLink rfDevices = NULL;
 
 uint16_t rfDeviceAddrCounter = 0x0001;
 
 dLink rfCreateDevice(void) {
-  printf("rfCreateDevice\n");
+  dxprintf("rfCreateDevice\n");
   dLink newDevice = ( dLink ) pvPortMalloc ( sizeof (xDevice));
   if (newDevice == NULL) {
-    printf("Error: can't allocate memory!\n");
+    dxprintf("Error: can't allocate memory!\n");
     return NULL;
   }
-  printf("New device on: %p!\n", newDevice);
+  dxprintf("New device on: %p!\n", newDevice);
   newDevice->Next = NULL;
   newDevice->Prev = NULL;
   newDevice->Type = 0x00;
@@ -41,7 +42,7 @@ dLink rfCreateDevice(void) {
     newDevice->Prev = Cur;
     Cur->Next = newDevice;
   }
-  printf("rf: %p, ND: %p\n", rfDevices, newDevice);
+  dxprintf("rf: %p, ND: %p\n", rfDevices, newDevice);
   return newDevice;
 }
 
@@ -62,7 +63,7 @@ dLink rfUpdateDevice(uint16_t Address, uint8_t Type, uint8_t Config) {
   dLink Cur = rfDevices;
   uint8_t isUpdated = 0;
   while (Cur != NULL) {
-//    printf("fd A: %x, P: %p, N: %p\n", Cur->Address, Cur->Prev, Cur->Next);
+//    dxprintf("fd A: %x, P: %p, N: %p\n", Cur->Address, Cur->Prev, Cur->Next);
     if (Cur->Address == Address) {
       if (Type != NULL) {
         Cur->Type = Type;
@@ -82,7 +83,7 @@ dLink rfUpdateDevice(uint16_t Address, uint8_t Type, uint8_t Config) {
 dLink rfGetDevice(uint16_t Address) {
   dLink Cur = rfDevices;
   while (Cur != NULL) {
-//    printf("fd A: %x, P: %p, N: %p\n", Cur->Address, Cur->Prev, Cur->Next);
+//    dxprintf("fd A: %x, P: %p, N: %p\n", Cur->Address, Cur->Prev, Cur->Next);
     if (Cur->Address == Address) {
       return Cur;
     }
@@ -95,7 +96,7 @@ uint8_t rfRemoveDevices (uint16_t Address) {
   dLink Cur = rfDevices;
   uint8_t isRemoved = 0;
   while (Cur != NULL) {
-//    printf("fd A: %x, P: %p, N: %p\n", Cur->Address, Cur->Prev, Cur->Next);
+//    dxprintf("fd A: %x, P: %p, N: %p\n", Cur->Address, Cur->Prev, Cur->Next);
     if (Cur->Address == Address) {
       Cur->Prev->Next = Cur->Next;
       Cur->Next->Prev = Cur->Prev;
@@ -152,7 +153,7 @@ void rfSaveDevices(void) {
 
   while(FLASH->SR & FLASH_SR_BSY) {};
   
-  printf("SR: %d\n", FLASH->SR);
+  dxprintf("SR: %d\n", FLASH->SR);
 
   FLASH->CR &= ~(FLASH_CR_PG);
   taskEXIT_CRITICAL();
@@ -204,7 +205,7 @@ void rfPingAllDevices(void) {
   }
   uint8_t Data[2] = {0x00, 0x01};
   while (Cur != NULL) {
-//    printf("fd A: %x, P: %p, N: %p\n", Cur->Address, Cur->Prev, Cur->Next);
+//    dxprintf("fd A: %x, P: %p, N: %p\n", Cur->Address, Cur->Prev, Cur->Next);
     rfSendCommad(rfCMD_PING, Cur->Address, &Data[0], 2, Cur->Salt);
     osDelay(20);
     Cur = Cur->Next;
@@ -243,8 +244,9 @@ void rfSendData(uint8_t Cmd, dLink Device, char *Parameters) {
         uint8_t Data[21] = {0x00};
         for (int i = 0; i < readVals; i++){
           Data[i] = (uint8_t)NewValue[i];
-//          printf("NewValue: %03x\n", Data[i]);
+//          dxprintf("NewValue: %03x\n", Data[i]);
         }
+//        dxprintf("** Cmd: %x\n", Cmd);
         rfSendCommad(Cmd, Device->Address, &Data[0], readVals, Device->Salt);
       } else {
         QueueResponse((char *)"Error: Device address not set!\n\n");
@@ -261,7 +263,7 @@ void rfSendData(uint8_t Cmd, dLink Device, char *Parameters) {
 
 void rfSendCommad(uint8_t Command, uint16_t Address, uint8_t *Data, uint8_t Length, uint32_t Salt) {
   if (Length > 21) {
-    printf("Data can't be length than 20 bytes");
+    dxprintf("Data can't be length than 20 bytes");
   }
   uint8_t DeviceAddress[5] = {0x00};
   nRF24_GetDeviceFullAddress(Address, &DeviceAddress[0]);
@@ -276,11 +278,11 @@ void rfSendCommad(uint8_t Command, uint16_t Address, uint8_t *Data, uint8_t Leng
   uint32_t crcRes = rfCalcCRC32(&pBuf[0], Length + 7);
   *((uint32_t *)(pBuf+7+Length)) = crcRes;
 
-  printf("TX:\n\n");
+  dxprintf("TX:\n\n");
   for(int i = 0; i < Length + 7 + 4; i++) {
-    printf("%x ", pBuf[i]);
+    dxprintf("%x ", pBuf[i]);
   }
-  printf("\n\n");
+  dxprintf("\n\n");
   nRF24_TXPacket(&hspi2, &DeviceAddress[0], &pBuf[0], Length+7);
   vPortFree(pBuf);
 }
