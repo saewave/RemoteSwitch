@@ -10,7 +10,7 @@ void ProcessData(uint8_t *Data, uint8_t Length) {
   for(int i=0; i<Length;i++) {
     dxprintf("%x ", Data[i]);
   }
-  dxputs(".....\n");
+  dxputs("\n.....\n");
 
   uint8_t HUBAddress[5];
   uint8_t Header  = Data[0];

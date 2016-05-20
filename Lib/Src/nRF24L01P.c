@@ -72,6 +72,7 @@ void nRF24_RXMode() {
   nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_RF_SETUP,0x27); // Setup: 250Kbps, 0dBm, LNA off
   nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_CONFIG,0x0F); // Config: CRC on (2 bytes), Power UP, RX/TX ctl = PRX
 //  HAL_Delay(5);
+  uint16_t k = 1000;while(k){k--;};
   CE_HIGH();
 }
 
@@ -95,7 +96,9 @@ void nRF24_TXMode() {
   nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_RF_CH,0x7C); // Set frequency channel 124 (2.524MHz)
   nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_RF_SETUP,0x27); // Setup: 250Kbps, +7dBm(SI24R1)
   nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_CONFIG,0x0E); // Config: CRC on (2 bytes), Power UP, RX/TX ctl = PTX
+  uint16_t k = 5000;while(k){k--;};
   CE_HIGH();
+  
 }
 
 uint8_t nRF24_ReadReg(uint8_t Reg) {
@@ -123,7 +126,7 @@ uint8_t nRF24_SendCmd(uint8_t Cmd)
 void nRF24_RWReg(uint8_t Reg, uint8_t Data)
 {
 
-  dxprintf("R: %x, D: %x\n", Reg, Data);
+//  dxprintf("R: %x, D: %x\n", Reg, Data);
   uint8_t pBuf[2] = {Reg, Data};
   CSN_LOW();
   SPI_SendData(pBuf, 2);
@@ -159,11 +162,12 @@ void nRF24_ReadBuf(uint8_t Reg, uint8_t *Data, uint8_t count)
 uint8_t nRF24_TXPacket(uint8_t *nRF24_Tx_addr, uint8_t *pBuf, uint8_t Length) {
 
   nRF24_HandleStatus();
+  nRF24_TXMode();
   /*
   uint8_t Tx_addr[5];
   memcpy(Tx_addr, nRF24_Tx_addr, 5);
   */
-  dxputs("TX_To:\n");
+/*  dxputs("TX_To:\n");
   for(int i =0; i<5;i++) {
     dxprintf("%x ", nRF24_Tx_addr[i]);
   }
@@ -172,17 +176,22 @@ uint8_t nRF24_TXPacket(uint8_t *nRF24_Tx_addr, uint8_t *pBuf, uint8_t Length) {
     dxprintf("%x ", pBuf[i]);
   }
   dxputs("\n");
-
+*/
   CE_LOW();
   nRF24_WriteBuf(nRF24_CMD_WREG | nRF24_REG_TX_ADDR,    nRF24_Tx_addr, nRF24_TX_ADDR_WIDTH); // Set static TX address
   nRF24_WriteBuf(nRF24_CMD_WREG | nRF24_REG_RX_ADDR_P0, nRF24_Tx_addr, nRF24_TX_ADDR_WIDTH); // Set static RX address for auto ack
   nRF24_WriteBuf(nRF24_CMD_W_TX_PAYLOAD, pBuf, Length); // Write specified buffer to FIFO
   nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_CONFIG,0x0E); // Config: CRC on (2 bytes), Power UP, RX/TX ctl = PTX
+  uint16_t i = 5000;
+  while(i){i--;};
   CE_HIGH(); // CE pin high => Start transmit
-  uint8_t i = 255;
+  i = 255;
   while(i){i--;};
   CE_LOW();
-
+  
+  i = 5000;
+  while(i){i--;};
+  
   return 0x00;
 }
 
@@ -210,11 +219,12 @@ uint8_t nRF24_GetStatus() {
 
 uint8_t nRF24_HandleStatus() {
 //  dxputs("*** nRF24_HandleStatus ***\n");
-  
-  uint8_t Status = nRF24_GetStatus();
+  SPI_FlushRxFifo();
+  uint8_t Status = 0x00;
   dxprintf("Status: %x\n", Status);
   
   do {
+    Status = nRF24_GetStatus();
     
     if (Status != 0x0E) {
       nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_STATUS, Status);
@@ -256,7 +266,8 @@ uint8_t nRF24_HandleStatus() {
 
       ProcessData(pBuf, Length);
     }
-    Status = nRF24_GetStatus();
+//    Status = nRF24_GetStatus();
+//    dxprintf("Post Status: %x\n", Status);
   } while (Status != 0x0E);
   return Status;
 }

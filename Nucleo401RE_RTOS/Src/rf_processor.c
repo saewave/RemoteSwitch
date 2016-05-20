@@ -18,10 +18,10 @@ void rfProcessCommand (uint8_t *Data, uint8_t Length) {
         dLink updDevice = rfUpdateDevice((((uint16_t)Data[4] << 8) | Data[5]), NULL, rfCONFIG_MASK_ONLINE);
         char Buf[60];
         if (updDevice == NULL) {
-          sprintf(Buf, "WARN! Device with adr: 0x%x%x NOT registered, but pinged!\n", Data[4], Data[5]);
+          sprintf(Buf, "WARN:%02x%02x:%02x:NOT registered, but pinged!\n", Data[4], Data[5], Data[7]);
           QueueResponse(Buf);
         } else {
-          sprintf(Buf, "Device with adr: 0x%x%x is ONLINE!\n", Data[4], Data[5]);
+          sprintf(Buf, "PING:%02x%02x:%02x:ONLINE\n", Data[4], Data[5], Data[7]);
           QueueResponse(Buf);
         }
       } break;
@@ -32,10 +32,10 @@ void rfProcessCommand (uint8_t *Data, uint8_t Length) {
         dLink updDevice = rfUpdateDevice((((uint16_t)Data[4] << 8) | Data[5]), Data[7], rfCONFIG_MASK_CONFIRMED | rfCONFIG_MASK_ONLINE | rfCONFIG_MASK_ENABLED);
         char Buf[55];
         if (updDevice) {
-          sprintf(Buf, "Device: Adr: 0x%x%x Type: 0x%x connected\n", Data[4], Data[5], Data[7]);
+          sprintf(Buf, "DISCOVER:%02x%02x:%02x:CONNECTED\n", Data[4], Data[5], Data[7]);
           QueueResponse(Buf);
         } else {
-          sprintf(Buf, "Device: Adr: 0x%x%x Type: 0x%x NOT connected\n", Data[4], Data[5], Data[7]);
+          sprintf(Buf, "DISCOVER:%02x%02x:%02x:NOT CONNECTED\n", Data[4], Data[5], Data[7]);
           QueueResponse(Buf);
         };
       } break;
@@ -58,7 +58,7 @@ void rfProcessCommand (uint8_t *Data, uint8_t Length) {
         strcat(Buf, "\n");
         QueueResponse(Buf);
       } else {
-        sprintf(Buf, "Device: Adr: 0x%x%x Type: 0x%x NOT connected\n", Data[4], Data[5], Data[7]);
+        sprintf(Buf, "WARN:%02x%02x:%02x:NOT registered!\n", Data[4], Data[5], Data[7]);
         QueueResponse(Buf);
       };
     } break;

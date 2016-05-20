@@ -94,12 +94,16 @@ int main(void)
   MX_SPI2_Init();
   MX_TIM10_Init();
   MX_USART2_UART_Init();
+  MX_USART1_UART_Init();
 
   /* USER CODE BEGIN 2 */
   
   HAL_IWDG_Start(&hiwdg);
   
   /* Enable the UART Data Register not empty Interrupt */
+  __HAL_UART_ENABLE_IT(&huart1, UART_IT_RXNE);
+  __HAL_UART_ENABLE_IT(&huart1, UART_IT_IDLE);
+  
   __HAL_UART_ENABLE_IT(&huart2, UART_IT_RXNE);
   __HAL_UART_ENABLE_IT(&huart2, UART_IT_IDLE);
   
@@ -162,7 +166,7 @@ void SystemClock_Config(void)
   RCC_OscInitTypeDef RCC_OscInitStruct;
   RCC_ClkInitTypeDef RCC_ClkInitStruct;
 
-  __PWR_CLK_ENABLE();
+  __HAL_RCC_PWR_CLK_ENABLE();
 
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE2);
 

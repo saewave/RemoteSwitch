@@ -203,6 +203,9 @@ void Usart2Tx(void const * argument)
       do {
         Status = HAL_UART_Transmit(&huart2, qCmdResponse.cData, qCmdResponse.cLength, 100);
       } while (Status != HAL_OK);
+      do {
+        Status = HAL_UART_Transmit(&huart1, qCmdResponse.cData, qCmdResponse.cLength, 100);
+      } while (Status != HAL_OK);
       vPortFree(qCmdResponse.cData);
     }
 
@@ -241,6 +244,31 @@ void SPIRxIrqStatus(void const * argument)
 }
 
 /* USER CODE BEGIN Application */
+void USART1_IRQHandler(void)
+{
+  if((__HAL_UART_GET_FLAG(&huart1, UART_FLAG_RXNE) != RESET) && (__HAL_UART_GET_IT_SOURCE(&huart1, UART_IT_RXNE) != RESET))
+  {
+    Usart2Char = (uint8_t)(huart1.Instance->DR & (uint8_t)0x00FF);
+    if (Usart2Char == AS_CMD_END_CHAR) {
+      AddCMDToQueue();
+    } else {
+      if (CPosition < AS_CMD_LENGTH) {
+        Usart2Cmd[CPosition++] = Usart2Char;
+      } else {
+        CPosition = 0x00;
+        uint8_t ErrorMsg[] = "Error Cmd too long!\n";
+        HAL_UART_Transmit(&huart1, ErrorMsg, sizeof(ErrorMsg)-1, 10);
+      }
+    }
+  }
+
+  if((__HAL_UART_GET_FLAG(&huart1, UART_FLAG_IDLE) != RESET) && (__HAL_UART_GET_IT_SOURCE(&huart1, UART_IT_IDLE) != RESET))
+  {
+    AddCMDToQueue();
+  }
+  __HAL_UART_CLEAR_PEFLAG(&huart1);
+}
+
 void USART2_IRQHandler(void)
 {
   if((__HAL_UART_GET_FLAG(&huart2, UART_FLAG_RXNE) != RESET) && (__HAL_UART_GET_IT_SOURCE(&huart2, UART_IT_RXNE) != RESET))

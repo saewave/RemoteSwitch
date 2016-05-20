@@ -47,12 +47,13 @@ void nRF24_RXMode(SPI_HandleTypeDef* hspi, uint8_t RX_PAYLOAD) {
   nRF24_WriteBuf(hspi, CHIP_Rx, nRF24_CMD_WREG | nRF24_REG_RX_ADDR_P0, nRF24_HUB_addr, nRF24_RX_ADDR_WIDTH); // Set static RX address
   nRF24_RWReg(hspi, CHIP_Rx, nRF24_CMD_WREG | nRF24_REG_FEATURE, 0x04);  //Allow dynamic payload length
   nRF24_RWReg(hspi, CHIP_Rx, nRF24_CMD_WREG | nRF24_REG_DYNPD, 0x1F);  //Enable dynamic payload length for 0-5 channels
-  nRF24_RWReg(hspi, CHIP_Rx, nRF24_CMD_WREG | nRF24_REG_EN_AA,0x1F); // Enable acknowledgement for data pipe 1
+  nRF24_RWReg(hspi, CHIP_Rx, nRF24_CMD_WREG | nRF24_REG_EN_AA,0x1F); // Enable acknowledgement for all data pipes
   nRF24_RWReg(hspi, CHIP_Rx, nRF24_CMD_WREG | nRF24_REG_EN_RXADDR,0x1F); // Enable data pipe 0-1
   nRF24_RWReg(hspi, CHIP_Rx, nRF24_CMD_WREG | nRF24_REG_RF_CH,0x7C); // Set frequency channel 110 (2.510MHz)
 //  nRF24_RWReg(hspi, CHIP_Rx, nRF24_CMD_WREG | nRF24_REG_RX_PW_P0,RX_PAYLOAD); // Set RX payload length (10 bytes)
   nRF24_RWReg(hspi, CHIP_Rx, nRF24_CMD_WREG | nRF24_REG_RF_SETUP,0x27); // Setup: 250Kbps, 0dBm, LNA off
   nRF24_RWReg(hspi, CHIP_Rx, nRF24_CMD_WREG | nRF24_REG_CONFIG,0x0F); // Config: CRC on (2 bytes), Power UP, RX/TX ctl = PRX
+  HAL_Delay(5);
   CE_HIGH(CHIP_Rx);
 }
 
@@ -76,6 +77,7 @@ void nRF24_TXMode(SPI_HandleTypeDef* hspi) {
   nRF24_RWReg(hspi, CHIP_Tx, nRF24_CMD_WREG | nRF24_REG_RF_CH,0x7C); // Set frequency channel 110 (2.510MHz)
   nRF24_RWReg(hspi, CHIP_Tx, nRF24_CMD_WREG | nRF24_REG_RF_SETUP,0x27); // Setup: 250Kbps, +7dBm
   nRF24_RWReg(hspi, CHIP_Tx, nRF24_CMD_WREG | nRF24_REG_CONFIG,0x0E); // Config: CRC on (2 bytes), Power UP, RX/TX ctl = PTX
+  HAL_Delay(5);
   CE_HIGH(CHIP_Tx);
 }
 
@@ -179,9 +181,9 @@ uint8_t nRF24_TXPacket(SPI_HandleTypeDef* hspi, uint8_t *nRF24_TX_addr, uint8_t 
   nRF24_WriteBuf(hspi, CHIP_Tx, nRF24_CMD_WREG | nRF24_REG_RX_ADDR_P0, nRF24_TX_addr, nRF24_TX_ADDR_WIDTH); // Set static RX address for auto ack
   nRF24_WriteBuf(hspi, CHIP_Tx, nRF24_CMD_W_TX_PAYLOAD, pBuf,Length); // Write specified buffer to FIFO
   nRF24_RWReg(hspi, CHIP_Tx, nRF24_CMD_WREG | nRF24_REG_CONFIG,0x0E); // Config: CRC on (2 bytes), Power UP, RX/TX ctl = PTX
+  HAL_Delay(5);
   CE_HIGH(CHIP_Tx); // CE pin high => Start transmit
-  uint8_t i = 255;
-  while(i){i--;};
+  uint8_t i = 255;while(i){i--;};
   CE_LOW(CHIP_Tx);
 
   return 0x00;
@@ -209,51 +211,53 @@ uint8_t nRF24_GetStatus(SPI_HandleTypeDef* hspi, uint8_t Chip) {
 }
 
 void nRF24_HandleStatus(SPI_HandleTypeDef* hspi, uint8_t Chip) {
-  uint8_t Status = nRF24_GetStatus(hspi, Chip);
   uint8_t Flags = 0x00;
-
-  if (Status & nRF24_MASK_MAX_RT) {
-    //Transmit error. Clear package
-//    dxprintf("nRF24_MASK_MAX_RT\n");
-    nRF24_SendCmd(hspi, Chip, nRF24_CMD_FLUSH_TX);
-    Flags |= nRF24_MASK_MAX_RT;
-    QueueResponse((char *)"DEVICE NOT RESPONDING\n");
-  }
-  
-  if (Status & nRF24_MASK_RX_DR) {
-    //Got a package, read it from buffer 
-//    dxprintf("nRF24_MASK_RX_DR\n");
-    
-    // TODO: !!!! DO IT IN WHILE LOOP UNTIL FIFO IS NOT EMPTY !!!!
-    
-    uint8_t pBuf[32];
-    uint8_t Length;
-    nRF24_RXPacket(hspi, (uint8_t *)&pBuf[0], &Length);
-
-    dxprintf("Length: %d, Data:", Length);
-    if (Length > 0) {
-      for (int i = 0; i < Length;i++) {
-        dxprintf("%x ", pBuf[i]);
-      }
+  uint8_t Status = 0x00;
+  do {
+    Status = nRF24_GetStatus(hspi, Chip);
+    if (Status & nRF24_MASK_MAX_RT) {
+      //Transmit error. Clear package
+      dxprintf("nRF24_MASK_MAX_RT\n");
+      nRF24_SendCmd(hspi, Chip, nRF24_CMD_FLUSH_TX);
+      Flags |= nRF24_MASK_MAX_RT;
+      QueueResponse((char *)"DEVICE NOT RESPONDING\n");
     }
-    dxprintf("\n");
-
-    rfProcessCommand((uint8_t *)&pBuf[0], Length);
     
-    Flags |= nRF24_MASK_RX_DR;
-  }
-  
-  if (Status & nRF24_MASK_TX_DS) {
-    //Package sent successfully. Just clear a flag
-//    dxprintf("nRF24_MASK_TX_DS\n");
-    Flags |= nRF24_MASK_TX_DS;
-  }
-  
-  if (Flags) {
-    nRF24_RWReg(hspi, Chip, nRF24_CMD_WREG | nRF24_REG_STATUS, Status | Flags);
-  } else {
-//    dxprintf("Status 221: %x\n", Status);
-  }
+    if ((Status & nRF24_MASK_RX_DR) || ((Status & 0x0E) != 0x0E)) {
+      //Got a package, read it from buffer 
+      dxprintf("nRF24_MASK_RX_DR\n");
+      
+      // TODO: !!!! DO IT IN WHILE LOOP UNTIL FIFO IS NOT EMPTY !!!!
+      
+      uint8_t pBuf[32];
+      uint8_t Length;
+      nRF24_RXPacket(hspi, pBuf, &Length);
+
+      dxprintf("Length: %d, Data:", Length);
+      if (Length > 0) {
+        for (int i = 0; i < Length;i++) {
+          dxprintf("%x ", pBuf[i]);
+        }
+      }
+      dxprintf("\n");
+
+      rfProcessCommand(pBuf, Length);
+      
+      Flags |= nRF24_MASK_RX_DR;
+    }
+    
+    if (Status & nRF24_MASK_TX_DS) {
+      //Package sent successfully. Just clear a flag
+      dxprintf("nRF24_MASK_TX_DS\n");
+      Flags |= nRF24_MASK_TX_DS;
+    }
+    
+    if (Status != 0x0E) {
+      nRF24_RWReg(hspi, Chip, nRF24_CMD_WREG | nRF24_REG_STATUS, Status);
+    } else {
+  //    dxprintf("Status 221: %x\n", Status);
+    }
+  } while (Status != 0x0E);
 
 }
 

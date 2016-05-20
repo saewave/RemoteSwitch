@@ -150,7 +150,7 @@ void F030f4_TIM_Configure (void) {
 //  TIM14->CR1 |= TIM_CR1_CKD_1;
   TIM14->DIER |= TIM_DIER_UIE;
   TIM14->PSC = 8000;
-  TIM14->ARR = 2000;
+  TIM14->ARR = 10000;
   
   NVIC_EnableIRQ(TIM14_IRQn); /* (1) */
   NVIC_SetPriority(TIM14_IRQn,0); /* (2) */
@@ -160,6 +160,7 @@ void F030f4_TIM_Configure (void) {
 
 void SPI_SendData(uint8_t *Data, uint16_t Length) {
   uint16_t Timeout = 1000;
+  uint8_t Pos = 0;
   /*
   dxprintf("SPI_SendData\n");
   if (Length > 2){
@@ -168,7 +169,7 @@ void SPI_SendData(uint8_t *Data, uint16_t Length) {
     }
   }
     */
-  while (Length > 0) {
+  while (Length > Pos) {
     /* Wait until TXE flag is set to send data */
     if((SPI1->SR & SPI_SR_TXE) == SPI_SR_TXE)
     {
@@ -181,8 +182,9 @@ void SPI_SendData(uint8_t *Data, uint16_t Length) {
       }
       else
       {*/
-        *((__IO uint8_t*)&SPI1->DR) = (*Data++);
-        Length--;
+        *((__IO uint8_t*)&SPI1->DR) = Data[Pos];
+//      dxprintf("%d:%x ", Pos, Data[Pos]);
+        Pos++;
 //      }
     }
     else
@@ -195,6 +197,7 @@ void SPI_SendData(uint8_t *Data, uint16_t Length) {
     }
   }
   while ((SPI1->SR & SPI_SR_BSY) != 0){};
+//  dxputs("\n\n");
 }
 
 void SPI_ReadRxFifoData(uint8_t * Data, uint16_t Length) {
