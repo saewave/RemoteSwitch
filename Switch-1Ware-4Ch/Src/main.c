@@ -92,7 +92,7 @@ int main(void)
 
   /* USER CODE BEGIN 2 */
   printf("Compiled in: %s at %s!\n\n", CompileDate, CompileTime);
-  
+  /*
   OneWire_Init(GPIOA, GPIO_PIN_3);
   
   uint8_t pr = OneWire_CheckPresence();
@@ -108,7 +108,7 @@ int main(void)
 
   printf("Temperature: %x\n", Temperature);
   printf("Temperature: %2.2f\n", ((float)Temperature/16));
-  
+  */
   if (configREAD_ADDR_ON_START) {
     readConfig();
   }
