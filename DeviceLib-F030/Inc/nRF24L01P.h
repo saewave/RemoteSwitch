@@ -8,15 +8,15 @@
 #define nRF24_CE_PORT     CE_GPIO_Port
 #define nRF24_CE_PIN      CE_Pin
 
-#define CE_LOW()      F030f4_CE_LOW()
-#define CE_HIGH()     F030f4_CE_HIGH()
+#define CE_LOW()      P_CE_LOW()
+#define CE_HIGH()     P_CE_HIGH()
    
 // nRF24L01 CSN (Chip Enable) pin
 #define nRF24_CSN_PORT     CSN_GPIO_Port
 #define nRF24_CSN_PIN      CSN_Pin
 
-#define CSN_LOW()      F030f4_CSN_LOW()
-#define CSN_HIGH()     F030f4_CSN_HIGH()
+#define CSN_LOW()      P_CSN_LOW()
+#define CSN_HIGH()     P_CSN_HIGH()
 
 /* nRF24L0 commands */
 #define nRF24_CMD_RREG             0x00  // R_REGISTER -> Read command and status registers

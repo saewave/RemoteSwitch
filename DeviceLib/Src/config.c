@@ -6,7 +6,7 @@ void readConfig(void) {
   uint8_t Config[10] = {0x00};
   uint8_t isConfigStored = (*(__IO uint8_t*)(configFLASH_CFG_ADDR+1));
   if (isConfigStored == 0xFF) {
-//    printf("Confing not set!\n");
+    printf("Confing not set!\n");
     return;
   }
   printf("Saved addr:\n");
