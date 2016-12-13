@@ -1,23 +1,23 @@
 #ifndef __1ware_H
 #define __1ware_H
 
-#include "stdint.h"
 #include "stm32f0xx.h"
 
 #define GPIO_PIN_RESET 0
 #define GPIO_PIN_SET 1
 
-typedef struct {
-  GPIO_TypeDef* GPIOx;
-  uint16_t GPIO_Pin;
+typedef struct
+{
+    GPIO_TypeDef *GPIOx;
+    uint16_t      GPIO_Pin;
 } OneWireGPIO_t;
 
 typedef enum {
-  OneWireInputMode  = 1,
-  OneWireOutputMode = 0
+    OneWireInputMode  = 1,
+    OneWireOutputMode = 0
 } OneWirePinDirection_t;
 
-void OneWire_Init(GPIO_TypeDef* GPIOx, uint32_t GPIO_Pin);
+void OneWire_Init(GPIO_TypeDef *GPIOx, uint32_t GPIO_Pin);
 uint16_t OneWireReadTemp(void);
 void ChangePinDirection(OneWirePinDirection_t direction);
 uint8_t OneWire_CheckPresence(void);

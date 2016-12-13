@@ -74,27 +74,17 @@ void ProcessData(uint8_t *Data, uint8_t Length)
     case rfCMD_DISCOVER:
     { // CMD: Assign new address
         nRF24_SetHUBAddress(HUBAddress);
-        //        uint8_t NewAddress[5] = {0x00};
-        //        memcpy(NewAddress, &Data[Pos], 5);
 
         nRF24_SetDeviceAddress(&Data[Pos], Data[Pos + 5]);
         Pos += 5;
-
         uint8_t *NewAddressAfter = nRF24_GetDeviceAddress();
-
-        nRF24_TXMode();
-
-        uint8_t tBuf[14];
-        tBuf[0] = 0x10; // Response header, set bit [5]
-        memcpy(&tBuf[1], NewAddressAfter, 5);
-        tBuf[6] = 0x01;        // Cmd 0x01
-        tBuf[7] = DEVICE_TYPE; // Type 0x01 - simple switch
-        memcpy(&tBuf[8], NewAddressAfter, 5);
-        tBuf[13] = 0x01; // Set new address
-        nRF24_SetSwitchTo(nRF24_SWITCH_TO_RX);
-        nRF24_TXPacket(HUBAddress, tBuf, 14);
-
         SaveAddress(NewAddressAfter, HUBAddress);
+
+        uint8_t tBuf[6];
+        memcpy(&tBuf[0], NewAddressAfter, 5);
+        tBuf[5] = 0x01;                         // Set new address flag
+        
+        SendCommandToHub(rfCMD_DISCOVER, tBuf, 6);
     }
     break;
 
