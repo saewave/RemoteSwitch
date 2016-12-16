@@ -10,8 +10,6 @@ uint8_t nRF24_HUB_addr[nRF24_TX_ADDR_WIDTH] = {0x00, 0x00, 0x00, 0x00, 0x00};
 
 uint8_t nRF24_SwitchTo = nRF24_SWITCH_TO_NONE;
 
-//SPI_HandleTypeDef *hspiTxRx;
-
 void nRF24_SetDeviceAddress(uint8_t *Address, uint8_t Override)
 {
     memcpy(nRF24_Rx_addr, Address, 5);
@@ -43,14 +41,9 @@ void nRF24_SetSwitchTo(uint8_t SwitchTo)
     nRF24_SwitchTo = SwitchTo;
 }
 
-/*void nRF24_SetSPIHandler(SPI_HandleTypeDef* hspi) {
-  hspiTxRx = hspi;
-}*/
-
 // Put nRF24L01 in RX mode
 void nRF24_RXMode()
 {
-    //  printf("* RXMode\n");
     SPI_FlushRxFifo();
     CE_LOW();
     uint8_t reg, i = 0x00;
@@ -59,17 +52,8 @@ void nRF24_RXMode()
         nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_CONFIG, 0x0D); // Config: Power Off
         reg = nRF24_ReadReg(nRF24_REG_CONFIG);
         i++;
-        //    dxprintf("reg: %x\n", reg);
     } while (reg != 0x0D && i < 0xFF);
-    /*
-  dxprintf("**************** nRF24_RXMode\n");
-  uint8_t arr[5] = {1,2,3,4,5};
-  for(int i = 0; i< 2; i++) {
-    uint16_t* test16 = (uint16_t*)nRF24_Rx_addr;
-    dxprintf("test16 %x\n", test16);
-    dxprintf("%d: %x\n", i, * (test16 + i));
-  }
-*/
+
     nRF24_WriteBuf(nRF24_CMD_WREG | nRF24_REG_RX_ADDR_P0, nRF24_Rx_addr, nRF24_RX_ADDR_WIDTH); // Set static RX address
     nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_FEATURE, 0x04);                                     //Allow dynamic payload length
     nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_DYNPD, 0x1F);                                       //Enable dynamic payload length for 0-5 channels
@@ -91,7 +75,6 @@ void nRF24_RXMode()
 // Put nRF24L01 in TX mode
 void nRF24_TXMode()
 {
-    //  printf("* TXMode\n");
     SPI_FlushRxFifo();
     CE_LOW();
     uint8_t reg, i = 0x00;
@@ -153,13 +136,6 @@ void nRF24_RWReg(uint8_t Reg, uint8_t Data)
 
 void nRF24_WriteBuf(uint8_t Reg, uint8_t *Data, uint8_t size)
 {
-    /*
-  dxprintf("nRF24_WriteBuf. Reg: %x\n", Reg);
-  for (uint8_t i= 0; i<size; i++) {
-    dxprintf("%d: %x\n", i, * ( ((uint16_t*)Data) + i));
-  }
-  dxputs("\n");
-*/
     CSN_LOW();
 
     SPI_SendData(&Reg, 1);
@@ -246,13 +222,11 @@ uint8_t nRF24_GetStatus()
     CSN_LOW();
     SPI_ReadData(&Status, 1, nRF24_CMD_NOP);
     CSN_HIGH();
-    //  printf("S: %x\n", hspi->Instance->DR);
     return Status;
 }
 
 uint8_t nRF24_HandleStatus()
 {
-    //  dxputs("*** nRF24_HandleStatus ***\n");
     SPI_FlushRxFifo();
     uint8_t Status = 0x00;
 
@@ -269,7 +243,6 @@ uint8_t nRF24_HandleStatus()
         if (Status & nRF24_MASK_MAX_RT)
         {
             //Transmit error. Clear package
-
             dxputs("nRF24_MASK_MAX_RT\n");
             nRF24_SendCmd(nRF24_CMD_FLUSH_TX);
             Flags |= nRF24_MASK_MAX_RT;
@@ -305,8 +278,6 @@ uint8_t nRF24_HandleStatus()
 
             ProcessData(pBuf, Length);
         }
-        //    Status = nRF24_GetStatus();
-        //    dxprintf("Post Status: %x\n", Status);
     } while (Status != 0x0E);
     return Status;
 }

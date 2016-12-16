@@ -1,30 +1,29 @@
 #include "stm32f0xx.h"
-
-#define _DEBUG
-
-//#include "1ware.h"
 #include "config.h"
+
+#if MOVE_VECTOR_TABLE==1
+volatile uint32_t *VectorTable = (volatile uint32_t *)MAIN_PROGRAM_RAM_ADDRESS;
+#endif
+
 #include "nRF24L01P.h"
 #include "rf_cmd_exec.h"
 #include "xdebug.h"
 #include "xprintf.h"
 
 #include "F030f4_Peripheral.h"
-
-int      HandleStatus      = 0;
-uint8_t  UpdateTemperature = 0;
-uint16_t Temperature       = 0;
+uint8_t i;
+int      HandleStatus      = 1;
+uint32_t Counter = 0;
 
 void InitAll(void)
 {
     GPIO_Configure();
     USART_Configure();
-    SPI_Configure();
-    TIM_Configure();
-    RTC_Configure();
-    //  System_Configure();
-
     dxdev_out(USART_SendChar);
+    SPI_Configure();
+    RTC_Configure();
+    RTC_Time_Configure(0,0,0);
+    RTC_Alarm_Configure(0xFF,0xFF,5);
 
     dxputs("InitAll Done!\n\n");
 
@@ -33,6 +32,16 @@ void InitAll(void)
 
 int main(void)
 {
+#if MOVE_VECTOR_TABLE==1
+    for (i = 0; i < 48; i++)
+    {
+        VectorTable[i] = *(__IO uint32_t *)(MAIN_PROGRAM_START_ADDRESS + (i << 2));
+    }
+    SYSCFG->CFGR1 |= SYSCFG_CFGR1_MEM_MODE;
+    RCC->APB2ENR |= RCC_APB2ENR_SYSCFGCOMPEN;
+#endif
+    __enable_irq();
+    
     InitAll();
 
     if (configREAD_ADDR_ON_START)
@@ -44,24 +53,41 @@ int main(void)
     CSN_HIGH();
 
     nRF24_RXMode();
-    nRF24_HandleStatus();
 
+#if USE_STOP_MODE==1
+    GOTO_Stop();
+    //We should never been here!
+    dxputs("What I'm doing here?\n");
+#endif
     while (1)
     {
+#if USE_STOP_MODE==0
+        dxputs("************\n");
         if (HandleStatus)
         {
             HandleStatus = 0x00;
             nRF24_HandleStatus();
         }
+#endif
     }
 }
 
-void EXTI_IRQHandler(uint8_t Pin)
+void uEXTI_IRQHandler(uint32_t Pin)
 {
+#if USE_STOP_MODE==1
+    nRF24_HandleStatus();
+#else
     HandleStatus = 1;
+#endif
 }
 
-void TIM_IRQHandler(void)
+void uTIM_IRQHandler(void)
 {
     dxputs("TIM_IRQHandler!\n");
+}
+
+
+void uRTC_IRQHandler(uint32_t RTC_ISR)
+{
+    dxprintf("uRTC_IRQHandler: 0x%h\n", RTC_ISR);
 }

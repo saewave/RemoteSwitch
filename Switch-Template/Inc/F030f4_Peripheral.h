@@ -1,6 +1,7 @@
 #include "stm32f0xx.h"
 #include "stdint.h"
 #include "xdebug.h"
+#include "config.h"
 
 /** @addtogroup Exported_macros
   * @{
@@ -26,6 +27,9 @@
       
 void System_Configure (void);
 void RTC_Configure (void);
+void RTC_Time_Configure(uint8_t hh, uint8_t mm, uint8_t ss);
+void RTC_Alarm_Configure(uint8_t hh, uint8_t mm, uint8_t ss);
+void RTC_WakeUp_Configure(uint16_t Period);
 void USART_Configure(void);
 void SPI_Configure (void);
 void GPIO_Configure (void);
@@ -42,5 +46,9 @@ void USART_SendData(uint8_t *Data, uint16_t Length);
 void FLASH_WriteData(uint32_t fAddress, uint8_t *Data, uint8_t Size,
                      uint32_t EraseAddress);
 
-void EXTI_IRQHandler(uint8_t Pin);
-void TIM_IRQHandler(void);
+void GOTO_Sleep(void);
+void GOTO_Stop(void);
+
+void uEXTI_IRQHandler(uint32_t Pin);
+void uTIM_IRQHandler(void);
+void uRTC_IRQHandler(uint32_t RTC_ISR);

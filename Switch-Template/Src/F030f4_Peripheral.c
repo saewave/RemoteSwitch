@@ -6,9 +6,9 @@
 
 #define APBCLK 8000000UL
 #define BAUDRATE 115200UL
-
+uint32_t tr;
 /**
-  * @brief  Setup the Syatem.
+  * @brief  Setup the System.
   * @param  None
   * @retval None
   */
@@ -31,11 +31,122 @@ void RTC_Configure(void)
     RCC->APB1ENR |= RCC_APB1ENR_PWREN;
     PWR->CR |= PWR_CR_DBP;
 
+    RTC->PRER |= RTC_PRER_PREDIV_S;
     RCC->BDCR |= RCC_BDCR_RTCEN | RCC_BDCR_RTCSEL_LSI;
     RCC->CSR |= RCC_CSR_LSION;
     while (!(RCC->CSR & RCC_CSR_LSIRDY))
     {
     };
+}
+
+/**
+  * @brief  Setup the RTC Time.
+  * @param  hh:mm:ss
+  * @retval None
+  */
+
+void RTC_Time_Configure(uint8_t hh, uint8_t mm, uint8_t ss)
+{
+    RTC->WPR = 0xCA;
+    RTC->WPR = 0x53;
+
+    RTC->ISR |= RTC_ISR_INIT;
+    while (!(RTC->ISR & RTC_ISR_INITF))
+    {
+    };
+    RTC->TR = ((((hh / 10) << 4) | (hh % 10)) << 16) | ((((mm / 10) << 4) | (mm % 10)) << 8) | (((ss / 10) << 4) | (ss % 10));
+
+    RTC->ISR &= ~RTC_ISR_INIT;
+    RTC->WPR = 0xFF;
+}
+
+/**
+  * @brief  Setup the RTC Alarm.
+  * @param  hh:mm:ss (use 0xFF to ignore value)
+  * @retval None
+  */
+
+void RTC_Alarm_Configure(uint8_t hh, uint8_t mm, uint8_t ss)
+{
+    RTC->WPR = 0xCA;
+    RTC->WPR = 0x53;
+    RTC->CR &= ~RTC_CR_ALRAE; //Disable alarm
+    RTC->CR |= RTC_CR_BKP;
+    while (!(RTC->ISR & RTC_ISR_ALRAWF))
+    {
+    };
+
+    uint32_t ALRMAR = 0;
+    if (ss != 0xFF)
+    {
+        ALRMAR |= ((ss / 10) << 4) | (ss % 10);
+        RTC->ALRMAR &= ~RTC_ALRMAR_MSK1;
+    }
+    else
+    {
+        RTC->ALRMAR |= RTC_ALRMAR_MSK1;
+    }
+    if (mm != 0xFF)
+    {
+        ALRMAR |= (((mm / 10) << 4) | (mm % 10)) << 8;
+        RTC->ALRMAR &= ~RTC_ALRMAR_MSK2;
+    }
+    else
+    {
+        RTC->ALRMAR |= RTC_ALRMAR_MSK2;
+    }
+    if (hh != 0xFF)
+    {
+        ALRMAR |= (((hh / 10) << 4) | (hh % 10)) << 8;
+        RTC->ALRMAR &= ~RTC_ALRMAR_MSK3;
+    }
+    else
+    {
+        RTC->ALRMAR |= RTC_ALRMAR_MSK3;
+    }
+    RTC->CR |= RTC_CR_ALRAE;  //Enable alarm
+    RTC->CR |= RTC_CR_ALRAIE; //Enable alarm interrupt
+
+    while (!(RTC->ISR & RTC_ISR_ALRAWF))
+    {
+    };
+
+    RTC->WPR = 0xFF;
+
+    EXTI->IMR |= EXTI_IMR_MR17;
+    EXTI->RTSR |= EXTI_RTSR_TR17;
+    NVIC_EnableIRQ(RTC_IRQn);
+    NVIC_SetPriority(RTC_IRQn, 1);
+}
+
+/**
+  * @brief  Setup the RTC Alarm.
+  * @param  None
+  * @retval None
+  */
+
+void RTC_WakeUp_Configure(uint16_t Period)
+{
+    RTC->WPR = 0xCA; //Disable write protection
+    RTC->WPR = 0x53;
+
+    RTC->CR &= ~RTC_CR_WUTE; //Disable wakeup timer
+    while (!(RTC->ISR & RTC_ISR_WUTWF))
+    {
+    }; //Wait until it is set in RTC_ISR
+
+    RTC->WUTR = (uint32_t)Period;
+
+    RTC->CR |= RTC_CR_WUCKSEL_0;
+    RTC->CR |= RTC_CR_WUTE | RTC_CR_WUTIE; //Enable wakeup timer
+    RTC->CR |= RTC_CR_ALRAIE;              //Enable alarm interrupt
+
+    RTC->WPR = 0xFF;
+
+    EXTI->IMR |= EXTI_IMR_MR20;
+    EXTI->RTSR |= EXTI_RTSR_TR20;
+    NVIC_EnableIRQ(RTC_IRQn);
+    NVIC_SetPriority(RTC_IRQn, 1);
 }
 
 /**
@@ -130,7 +241,8 @@ void TIM_Configure(void)
     //  TIM14->CR1 |= TIM_CR1_CKD_1;
     TIM14->DIER |= TIM_DIER_UIE;
     TIM14->PSC = 8000;
-    TIM14->ARR = 60000;
+    TIM14->ARR = 6000;
+    TIM14->CNT = 1;
 
     NVIC_EnableIRQ(TIM14_IRQn);
     NVIC_SetPriority(TIM14_IRQn, 0);
@@ -297,22 +409,56 @@ void FLASH_WriteData(uint32_t fAddress, uint8_t *Data, uint8_t Size,
     FLASH->CR &= ~(FLASH_CR_PG);
 }
 
+void GOTO_Sleep(void)
+{
+    RCC->APB1ENR |= RCC_APB1ENR_PWREN;
+    dxputs("Going to sleep...");
+    __WFI();
+    dxputs("zzz....");
+}
+
+void GOTO_Stop(void)
+{
+    RCC->APB1ENR |= RCC_APB1ENR_PWREN;
+#if DEBUG_IN_STOP_MODE == 1
+    //Before using DEBUG in Stop mode reduce the frequency in your debugger to lower than 500kHz
+    DBGMCU->CR |= DBGMCU_CR_DBG_STOP;
+#endif
+    PWR->CR |= PWR_CR_LPDS;
+    SCB->SCR |= SCB_SCR_SLEEPDEEP_Msk;
+    SCB->SCR |= SCB_SCR_SLEEPONEXIT_Msk;
+    dxputs("Going to stop...");
+    __WFI();
+    dxputs("stop....\n");
+}
+
 void EXTI0_1_IRQHandler(void)
 {
     if ((EXTI->IMR & EXTI_IMR_MR0) && (EXTI->PR & EXTI_PR_PR0))
     {
-        while (GPIOA->IDR & GPIO_IDR_0)
-        {
-        }
         EXTI->PR |= EXTI_PR_PR0;
-        EXTI_IRQHandler(0);
     }
+    uEXTI_IRQHandler(EXTI->IMR);
 }
 
 void TIM14_IRQHandler(void)
 {
     TIM14->SR &= ~TIM_SR_UIF;
-    TIM_IRQHandler();
+    uTIM_IRQHandler();
+}
+
+void RTC_IRQHandler(void)
+{
+    uint32_t RTC_ISR = RTC->ISR;
+    if (RTC->ISR & RTC_ISR_ALRAF)
+    {
+        RTC->ISR &= ~RTC_ISR_ALRAF;
+    }
+    if (EXTI->PR & EXTI_PR_PR17)
+    {
+        EXTI->PR |= EXTI_PR_PR17;
+    }
+    uRTC_IRQHandler(RTC_ISR);
 }
 
 void SysTick_Handler(void)
@@ -320,20 +466,26 @@ void SysTick_Handler(void)
     // Not enabled by default
 }
 
-__weak void EXTI_IRQHandler(uint8_t Pin)
+__weak void uEXTI_IRQHandler(uint32_t Pin)
 {
     /* Prevent unused argument(s) compilation warning */
     UNUSED(Pin);
     /* NOTE: This function Should not be modified, when the callback is needed,
-           the EXTI_IRQHandler could be implemented in the user file
+           the uEXTI_IRQHandler could be implemented in the user file
    */
 }
 
-__weak void TIM_IRQHandler(void)
+__weak void uTIM_IRQHandler(void)
 {
     /* NOTE: This function Should not be modified, when the callback is needed,
-           the TIM_IRQHandler could be implemented in the user file
+           the uTIM_IRQHandler could be implemented in the user file
    */
 }
 
+__weak void uRTC_IRQHandler(uint32_t RTC_ISR)
+{
+    /* NOTE: This function Should not be modified, when the callback is needed,
+           the uRTC_IRQHandler could be implemented in the user file
+   */
+}
 #endif /* __Peripheral_H */
