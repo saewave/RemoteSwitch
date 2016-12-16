@@ -76,6 +76,7 @@ void RTC_Alarm_Configure(uint8_t hh, uint8_t mm, uint8_t ss)
     {
     };
 
+    RTC->ALRMAR |= RTC_ALRMAR_MSK4;
     uint32_t ALRMAR = 0;
     if (ss != 0xFF)
     {
@@ -104,6 +105,7 @@ void RTC_Alarm_Configure(uint8_t hh, uint8_t mm, uint8_t ss)
     {
         RTC->ALRMAR |= RTC_ALRMAR_MSK3;
     }
+    RTC->ALRMAR |= ALRMAR;
     RTC->CR |= RTC_CR_ALRAE;  //Enable alarm
     RTC->CR |= RTC_CR_ALRAIE; //Enable alarm interrupt
 
