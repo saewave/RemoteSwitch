@@ -1,40 +1,32 @@
+#include "config.h"
 #include "stm32f0xx.h"
 
-//#define _DEBUG
+#if MOVE_VECTOR_TABLE == 1
+volatile uint32_t *VectorTable = (volatile uint32_t *)MAIN_PROGRAM_RAM_ADDRESS;
+#endif
 
 #include "1ware.h"
-#include "config.h"
 #include "nRF24L01P.h"
 #include "rf_cmd_exec.h"
 #include "xdebug.h"
 #include "xprintf.h"
 
 #include "F030f4_Peripheral.h"
-
-int      HandleStatus      = 0;
-uint8_t  UpdateTemperature = 0;
-uint16_t Temperature       = 0;
+uint8_t  i;
+int      HandleStatus = 1;
+uint32_t Counter      = 0;
 
 void InitAll(void)
 {
     GPIO_Configure();
     USART_Configure();
-    SPI_Configure();
-    TIM_Configure();
-    RTC_Configure();
-    //  System_Configure();
-
     dxdev_out(USART_SendChar);
+    SPI_Configure();
+    RTC_Configure();
+    RTC_Time_Configure(0, 0, 0);
+    RTC_Alarm_Configure(0xFF, 0xFF, 5);
 
-    //Set PA3 as 1 Ware GPIO Pin
     OneWire_Init(GPIOA, (uint16_t)0x0008);
-
-    uint8_t pr = OneWire_CheckPresence();
-    OneWire_SendByte(0xCC);
-    OneWire_SendByte(0x4E);
-    OneWire_SendByte(0x4B);
-    OneWire_SendByte(0x46);
-    OneWire_SendByte(0x5F);
 
     dxputs("InitAll Done!\n\n");
 
@@ -43,6 +35,16 @@ void InitAll(void)
 
 int main(void)
 {
+#if MOVE_VECTOR_TABLE == 1
+    for (i = 0; i < 48; i++)
+    {
+        VectorTable[i] = *(__IO uint32_t *)(MAIN_PROGRAM_START_ADDRESS + (i << 2));
+    }
+    SYSCFG->CFGR1 |= SYSCFG_CFGR1_MEM_MODE;
+    RCC->APB2ENR |= RCC_APB2ENR_SYSCFGCOMPEN;
+#endif
+    __enable_irq();
+
     InitAll();
 
     if (configREAD_ADDR_ON_START)
@@ -56,36 +58,35 @@ int main(void)
     nRF24_RXMode();
     nRF24_HandleStatus();
 
+#if USE_STOP_MODE == 1
+    GOTO_Stop();
+    //We should never been here!
+    dxputs("What I'm doing here?\n");
+#endif
     while (1)
     {
+#if USE_STOP_MODE == 0
         if (HandleStatus)
         {
             HandleStatus = 0x00;
-            dxputs("EXTI0_1_IRQHandler!\n");
             nRF24_HandleStatus();
         }
-        if (UpdateTemperature)
-        {
-            UpdateTemperature    = 0;
-            uint16_t Temperature = OneWireReadTemp();
-            uint8_t  Data[2]     = {(uint8_t)(Temperature >> 8), (uint8_t)Temperature};
-            rfInternalCallback(Data, 2);
-            //      dxprintf("Temperature: %x\n", Temperature);
-            dxprintf("Temperature: %d.%d\n", (int)Temperature / 16, (int)((float)((float)Temperature / 16 - (int)Temperature / 16) * 100));
-
-            dxprintf("%d%d:%d%d:%d%d\n", (uint8_t)(((RTC->TR & RTC_TR_HT) >> 4) >> 16), (uint8_t)((RTC->TR & RTC_TR_HU) >> 16),
-                     (uint8_t)(((RTC->TR & RTC_TR_MNT) >> 4) >> 8), (uint8_t)((RTC->TR & RTC_TR_MNU) >> 8),
-                     (uint8_t)((RTC->TR & RTC_TR_ST) >> 4), (uint8_t)((RTC->TR & RTC_TR_SU)));
-        }
+#endif
     }
 }
 
-void EXTI_IRQHandler(uint8_t Pin)
+void uEXTI_IRQHandler(uint32_t Pin)
 {
+#if USE_STOP_MODE == 1
+    nRF24_HandleStatus();
+#else
     HandleStatus = 1;
+#endif
 }
 
-void TIM_IRQHandler(void)
+void uRTC_IRQHandler(uint32_t RTC_ISR)
 {
-    UpdateTemperature = 1;
+    uint16_t Temperature = OneWireReadTemp();
+    uint8_t  Data[2]     = {(uint8_t)(Temperature >> 8), (uint8_t)Temperature};
+    rfInternalCallback(Data, 2);
 }

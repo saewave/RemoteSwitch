@@ -8,4 +8,10 @@
 
 void readConfig(void);
 
+#define MOVE_VECTOR_TABLE 0
+#define MAIN_PROGRAM_START_ADDRESS (uint32_t)0x08000400
+#define MAIN_PROGRAM_RAM_ADDRESS 0x20000000
+#define USE_STOP_MODE 1
+#define DEBUG_IN_STOP_MODE 0
+
 #endif /* __CONFIG_H */
