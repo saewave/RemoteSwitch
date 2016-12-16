@@ -62,7 +62,6 @@ int main(void)
     while (1)
     {
 #if USE_STOP_MODE==0
-        dxputs("************\n");
         if (HandleStatus)
         {
             HandleStatus = 0x00;
