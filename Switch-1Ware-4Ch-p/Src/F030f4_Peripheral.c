@@ -6,7 +6,7 @@
 
 #define APBCLK 8000000UL
 #define BAUDRATE 115200UL
-uint32_t tr;
+
 /**
   * @brief  Setup the System.
   * @param  None
@@ -223,7 +223,7 @@ void GPIO_Configure(void)
 
     NVIC_EnableIRQ(EXTI0_1_IRQn);
     NVIC_SetPriority(EXTI0_1_IRQn, 5);
-    
+
     /* PA3 One Wire. Output OD */
     GPIOA->MODER |= GPIO_MODER_MODER3_0;
     GPIOA->OTYPER |= GPIO_OTYPER_OT_3;
@@ -232,7 +232,6 @@ void GPIO_Configure(void)
     /* PA9. Output PP */
     GPIOA->MODER |= GPIO_MODER_MODER10_0;
     GPIOA->OSPEEDR |= GPIO_OSPEEDER_OSPEEDR10;
-
 }
 
 /**
@@ -358,23 +357,53 @@ void SPI_FlushRxFifo(void)
 
 void USART_SendChar(unsigned char ch)
 {
-    while ((USART1->ISR & USART_ISR_TXE) == 0)
-    {
-    };
     USART1->TDR = ch;
+    while ((USART1->ISR & USART_ISR_TC) != USART_ISR_TC)
+    {
+        __NOP();
+    };
 }
 
 void USART_SendData(uint8_t *Data, uint16_t Length)
 {
+    uint16_t Timeout;
     do
     {
-        while ((USART1->ISR & USART_ISR_TXE) == 0)
+        while ((USART1->ISR & USART_ISR_TC) != USART_ISR_TXE)
         {
+            __NOP();
         };
         USART1->TDR = *Data;
         Data++;
         Length--;
     } while (Length > 0);
+
+    Timeout = 500;
+    while ((USART1->ISR & USART_ISR_TC) != USART_ISR_TC)
+    {
+        Timeout--;
+        if (Timeout == 0)
+        {
+            break;
+        }
+        __NOP();
+    };
+    USART1->ICR |= USART_ICR_TCCF;
+}
+
+void USART_WaitForTXE(void)
+{
+    uint16_t Timeout = 500;
+    while ((USART1->ISR & USART_ISR_TC) != USART_ISR_TC)
+    {
+        Timeout--;
+        if (Timeout == 0)
+        {
+            break;
+        }
+        __NOP();
+    };
+    USART1->ICR |= USART_ICR_TCCF;
 }
 
 void FLASH_WriteData(uint32_t fAddress, uint8_t *Data, uint8_t Size,
@@ -434,9 +463,8 @@ void GOTO_Stop(void)
     PWR->CR |= PWR_CR_LPDS;
     SCB->SCR |= SCB_SCR_SLEEPDEEP_Msk;
     SCB->SCR |= SCB_SCR_SLEEPONEXIT_Msk;
-    dxputs("Going to stop...");
+    dxputs("Going to stop...\n");
     __WFI();
-    dxputs("stop....\n");
 }
 
 void EXTI0_1_IRQHandler(void)

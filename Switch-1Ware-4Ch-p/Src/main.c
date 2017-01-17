@@ -24,10 +24,8 @@ void InitAll(void)
     SPI_Configure();
     RTC_Configure();
     RTC_Time_Configure(0, 0, 0);
-    RTC_Alarm_Configure(0xFF, 0xFF, 5);
-
+    RTC_Alarm_Configure(0xFF, 0xFF, 0x01);
     OneWire_Init(GPIOA, (uint16_t)0x0008);
-
     dxputs("InitAll Done!\n\n");
 
     rfStartup();
@@ -59,6 +57,7 @@ int main(void)
     nRF24_HandleStatus();
 
 #if USE_STOP_MODE == 1
+    nRF24_PowerOff();
     GOTO_Stop();
     //We should never been here!
     dxputs("What I'm doing here?\n");
@@ -79,6 +78,7 @@ void uEXTI_IRQHandler(uint32_t Pin)
 {
 #if USE_STOP_MODE == 1
     nRF24_HandleStatus();
+    nRF24_PowerOff();
 #else
     HandleStatus = 1;
 #endif
@@ -86,7 +86,10 @@ void uEXTI_IRQHandler(uint32_t Pin)
 
 void uRTC_IRQHandler(uint32_t RTC_ISR)
 {
+    while (!(RCC->CR & RCC_CR_HSIRDY)) {__NOP();};
+    nRF24_PowerOnTX();
     uint16_t Temperature = OneWireReadTemp();
     uint8_t  Data[2]     = {(uint8_t)(Temperature >> 8), (uint8_t)Temperature};
     rfInternalCallback(Data, 2);
+    nRF24_PowerOff();
 }

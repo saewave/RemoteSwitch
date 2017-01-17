@@ -42,6 +42,7 @@ void SPI_FlushRxFifo(void);
 
 void USART_SendChar( unsigned char ch);
 void USART_SendData(uint8_t *Data, uint16_t Length);
+void USART_WaitForTXE(void);
 
 void FLASH_WriteData(uint32_t fAddress, uint8_t *Data, uint8_t Size,
                      uint32_t EraseAddress);
