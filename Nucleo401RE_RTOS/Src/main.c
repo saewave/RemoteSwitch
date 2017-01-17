@@ -46,6 +46,7 @@
 #include "nRF24L01P.h"
 #include "timestamp.h"
 #include "xdebug.h"
+#include "rf_device.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -135,6 +136,8 @@ int main(void)
 
     //  HAL_TIM_Base_Start_IT(&htim10);
     //  HAL_TIM_Base_Start_IT(&htim11);
+    
+    rfLoadDevices();
     /* USER CODE END 2 */
 
     /* Call init function for freertos objects (in freertos.c) */
