@@ -365,7 +365,7 @@
               <MiscControls>--C99</MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath>..\Lib\Inc;.\Inc</IncludePath>
+              <IncludePath>..\DeviceLib-F030\Inc;.\Inc</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -411,22 +411,22 @@
             <File>
               <FileName>F030f4_Peripheral.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Lib\Src\F030f4_Peripheral.c</FilePath>
+              <FilePath>Src\F030f4_Peripheral.c</FilePath>
             </File>
             <File>
               <FileName>nRF24L01P.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Lib\Src\nRF24L01P.c</FilePath>
+              <FilePath>..\DeviceLib-F030\Src\nRF24L01P.c</FilePath>
             </File>
             <File>
               <FileName>rf_cmd.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Lib\Src\rf_cmd.c</FilePath>
+              <FilePath>..\DeviceLib-F030\Src\rf_cmd.c</FilePath>
             </File>
             <File>
               <FileName>timestamp.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Lib\Src\timestamp.c</FilePath>
+              <FilePath>..\DeviceLib-F030\Src\timestamp.c</FilePath>
               <FileOption>
                 <CommonProperty>
                   <UseCPPCompiler>2</UseCPPCompiler>
@@ -474,7 +474,7 @@
             <File>
               <FileName>xprintf.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Lib\Src\xprintf.c</FilePath>
+              <FilePath>..\DeviceLib-F030\Src\xprintf.c</FilePath>
             </File>
             <File>
               <FileName>main.c</FileName>
