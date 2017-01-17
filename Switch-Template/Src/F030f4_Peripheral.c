@@ -6,7 +6,7 @@
 
 #define APBCLK 8000000UL
 #define BAUDRATE 115200UL
-uint32_t tr;
+
 /**
   * @brief  Setup the System.
   * @param  None
@@ -36,6 +36,7 @@ void RTC_Configure(void)
     RCC->CSR |= RCC_CSR_LSION;
     while (!(RCC->CSR & RCC_CSR_LSIRDY))
     {
+        __NOP();
     };
 }
 
@@ -53,6 +54,7 @@ void RTC_Time_Configure(uint8_t hh, uint8_t mm, uint8_t ss)
     RTC->ISR |= RTC_ISR_INIT;
     while (!(RTC->ISR & RTC_ISR_INITF))
     {
+        __NOP();
     };
     RTC->TR = ((((hh / 10) << 4) | (hh % 10)) << 16) | ((((mm / 10) << 4) | (mm % 10)) << 8) | (((ss / 10) << 4) | (ss % 10));
 
@@ -74,6 +76,7 @@ void RTC_Alarm_Configure(uint8_t hh, uint8_t mm, uint8_t ss)
     RTC->CR |= RTC_CR_BKP;
     while (!(RTC->ISR & RTC_ISR_ALRAWF))
     {
+        __NOP();
     };
 
     RTC->ALRMAR |= RTC_ALRMAR_MSK4;
@@ -111,6 +114,7 @@ void RTC_Alarm_Configure(uint8_t hh, uint8_t mm, uint8_t ss)
 
     while (!(RTC->ISR & RTC_ISR_ALRAWF))
     {
+        __NOP();
     };
 
     RTC->WPR = 0xFF;
@@ -135,6 +139,7 @@ void RTC_WakeUp_Configure(uint16_t Period)
     RTC->CR &= ~RTC_CR_WUTE; //Disable wakeup timer
     while (!(RTC->ISR & RTC_ISR_WUTWF))
     {
+        __NOP();
     }; //Wait until it is set in RTC_ISR
 
     RTC->WUTR = (uint32_t)Period;
@@ -277,6 +282,7 @@ void SPI_SendData(uint8_t *Data, uint16_t Length)
     }
     while ((SPI1->SR & SPI_SR_BSY) != 0)
     {
+        __NOP();
     };
 }
 
@@ -304,6 +310,7 @@ void SPI_ReadRxFifoData(uint8_t *Data, uint16_t Length)
 
     while ((SPI1->SR & SPI_SR_BSY) != 0)
     {
+        __NOP();
     };
 }
 
@@ -332,6 +339,7 @@ void SPI_ReadData(uint8_t *Data, uint16_t Length, uint8_t Dummy)
     }
     while ((SPI1->SR & SPI_SR_BSY) != 0)
     {
+        __NOP();
     };
 }
 
@@ -355,6 +363,7 @@ void USART_SendChar(unsigned char ch)
 {
     while ((USART1->ISR & USART_ISR_TXE) == 0)
     {
+        __NOP();
     };
     USART1->TDR = ch;
 }
@@ -365,6 +374,7 @@ void USART_SendData(uint8_t *Data, uint16_t Length)
     {
         while ((USART1->ISR & USART_ISR_TXE) == 0)
         {
+            __NOP();
         };
         USART1->TDR = *Data;
         Data++;
@@ -382,6 +392,7 @@ void FLASH_WriteData(uint32_t fAddress, uint8_t *Data, uint8_t Size,
     {
         while (FLASH->SR & FLASH_SR_BSY)
         {
+            __NOP();
         };                         // Wait untill memory ready for erase
         FLASH->CR |= FLASH_CR_PER; // Erase one page
         FLASH->AR |= EraseAddress; // Erase address
@@ -390,14 +401,17 @@ void FLASH_WriteData(uint32_t fAddress, uint8_t *Data, uint8_t Size,
 
     while (FLASH->SR & FLASH_SR_BSY)
     {
+        __NOP();
     }; // Wait untill memory ready
     FLASH->CR &= ~FLASH_CR_PER;
     while (FLASH->SR & FLASH_SR_BSY)
     {
+        __NOP();
     };
     FLASH->CR |= FLASH_CR_PG; // Allow flash programming
     while (FLASH->SR & FLASH_SR_BSY)
     {
+        __NOP();
     };
     for (int i = 0; i < 10; i += 2)
     {
@@ -407,6 +421,7 @@ void FLASH_WriteData(uint32_t fAddress, uint8_t *Data, uint8_t Size,
     }
     while (FLASH->SR & FLASH_SR_BSY)
     {
+        __NOP();
     };
     FLASH->CR &= ~(FLASH_CR_PG);
 }
