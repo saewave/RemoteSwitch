@@ -41,6 +41,35 @@ void nRF24_SetSwitchTo(uint8_t SwitchTo)
     nRF24_SwitchTo = SwitchTo;
 }
 
+void nRF24_PowerOff(void)
+{
+    CE_LOW();
+    nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_CONFIG, 0x3D);   //Power off
+}
+
+
+void nRF24_PowerOnTX(void)
+{
+    nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_CONFIG, 0x3E);   //Power on TX
+    uint16_t k = 1000;
+    while (k)
+    {
+        k--;
+    };
+    CE_HIGH();
+}
+
+void nRF24_PowerOnRX(void)
+{
+    nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_CONFIG, 0x3F);   //Power on RX
+    uint16_t k = 1000;
+    while (k)
+    {
+        k--;
+    };
+    CE_HIGH();
+}
+
 // Put nRF24L01 in RX mode
 void nRF24_RXMode()
 {
@@ -49,7 +78,7 @@ void nRF24_RXMode()
     uint8_t reg, i = 0x00;
     do
     {
-        nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_CONFIG, 0x0D); // Config: Power Off
+        nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_CONFIG, 0x3D); // Config: Power Off
         reg = nRF24_ReadReg(nRF24_REG_CONFIG);
         i++;
     } while (reg != 0x0D && i < 0xFF);
@@ -60,10 +89,8 @@ void nRF24_RXMode()
     nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_EN_AA, 0x1F);                                       // Enable autoack for data pipe 1
     nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_EN_RXADDR, 0x1F);                                   // Enable data pipe 0-1
     nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_RF_CH, 0x7C);                                       // Set frequency channel 124 (2.524MHz)
-                                                                                               //  nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_RX_PW_P0,RX_PAYLOAD); // Set RX payload length (10 bytes)
     nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_RF_SETUP, 0x27);                                    // Setup: 250Kbps, 0dBm, LNA off
-    nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_CONFIG, 0x0F);                                      // Config: CRC on (2 bytes), Power UP, RX/TX ctl = PRX
-                                                                                               //  HAL_Delay(5);
+    nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_CONFIG, 0x3F);                                      // Config: CRC on (2 bytes), Power UP, RX/TX ctl = PRX
     uint16_t k = 1000;
     while (k)
     {
@@ -80,7 +107,7 @@ void nRF24_TXMode()
     uint8_t reg, i = 0x00;
     do
     {
-        nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_CONFIG, 0x0C); // Config: Power Off
+        nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_CONFIG, 0x3C); // Config: Power Off
         reg = nRF24_ReadReg(nRF24_REG_CONFIG);
         i++;
     } while (reg != 0x0C && i < 0xFF);
@@ -92,7 +119,7 @@ void nRF24_TXMode()
     nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_SETUP_RETR, 0x1A); // Auto retransmit: wait 500us, 10 retries
     nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_RF_CH, 0x7C);      // Set frequency channel 124 (2.524MHz)
     nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_RF_SETUP, 0x27);   // Setup: 250Kbps, +7dBm(SI24R1)
-    nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_CONFIG, 0x0E);     // Config: CRC on (2 bytes), Power UP, RX/TX ctl = PTX
+    nRF24_RWReg(nRF24_CMD_WREG | nRF24_REG_CONFIG, 0x3E);     // Config: CRC on (2 bytes), Power UP, RX/TX ctl = PTX
     uint16_t k = 5000;
     while (k)
     {

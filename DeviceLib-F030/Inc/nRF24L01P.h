@@ -101,7 +101,10 @@ void nRF24_DumpRegisters(void);
 uint8_t nRF24_SendCmd(uint8_t Cmd);
 uint8_t nRF24_GetStatus(void);
 uint8_t nRF24_HandleStatus(void);
-
+void nRF24_PowerOff(void);
+void nRF24_PowerOnTX(void);
+void nRF24_PowerOnRX(void);
+    
 static void SPIx_Error (void);
 
 static void SPIx_Write(uint8_t Value);
