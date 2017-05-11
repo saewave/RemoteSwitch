@@ -3426,42 +3426,6 @@ Grid 5.00 mm&lt;p&gt;
 </package>
 </packages>
 </library>
-<library name="ir">
-<description>&lt;b&gt;IR&lt;/b&gt; International Rectifier&lt;p&gt;
-www.irf.com</description>
-<packages>
-<package name="SO08">
-<description>&lt;b&gt;8 Lead SOIC&lt;/b&gt;&lt;p&gt;
-Data Sheet No. PD60212 Rev A&lt;br&gt;
-Source: www.irf.com .. ir2520.pdf</description>
-<wire x1="2.4" y1="1.9" x2="2.4" y2="-1.4" width="0.2032" layer="51"/>
-<wire x1="2.4" y1="-1.4" x2="2.4" y2="-1.9" width="0.2032" layer="51"/>
-<wire x1="2.4" y1="-1.9" x2="-2.4" y2="-1.9" width="0.2032" layer="51"/>
-<wire x1="-2.4" y1="-1.9" x2="-2.4" y2="-1.4" width="0.2032" layer="51"/>
-<wire x1="-2.4" y1="-1.4" x2="-2.4" y2="1.9" width="0.2032" layer="51"/>
-<wire x1="-2.4" y1="1.9" x2="2.4" y2="1.9" width="0.2032" layer="51"/>
-<wire x1="2.4" y1="-1.4" x2="-2.4" y2="-1.4" width="0.2032" layer="51"/>
-<smd name="2" x="-0.635" y="-2.35" dx="0.72" dy="1.78" layer="1"/>
-<smd name="7" x="-0.635" y="2.35" dx="0.72" dy="1.78" layer="1"/>
-<smd name="1" x="-1.905" y="-2.35" dx="0.72" dy="1.78" layer="1"/>
-<smd name="3" x="0.635" y="-2.35" dx="0.72" dy="1.78" layer="1"/>
-<smd name="4" x="1.905" y="-2.35" dx="0.72" dy="1.78" layer="1"/>
-<smd name="8" x="-1.905" y="2.35" dx="0.72" dy="1.78" layer="1"/>
-<smd name="6" x="0.635" y="2.35" dx="0.72" dy="1.78" layer="1"/>
-<smd name="5" x="1.905" y="2.35" dx="0.72" dy="1.78" layer="1"/>
-<text x="-2.667" y="-1.905" size="1.27" layer="25" rot="R90">&gt;NAME</text>
-<text x="3.937" y="-1.905" size="1.27" layer="27" rot="R90">&gt;VALUE</text>
-<rectangle x1="-2.15" y1="-3.1" x2="-1.66" y2="-2" layer="51"/>
-<rectangle x1="-0.88" y1="-3.1" x2="-0.39" y2="-2" layer="51"/>
-<rectangle x1="0.39" y1="-3.1" x2="0.88" y2="-2" layer="51"/>
-<rectangle x1="1.66" y1="-3.1" x2="2.15" y2="-2" layer="51"/>
-<rectangle x1="1.66" y1="2" x2="2.15" y2="3.1" layer="51"/>
-<rectangle x1="0.39" y1="2" x2="0.88" y2="3.1" layer="51"/>
-<rectangle x1="-0.88" y1="2" x2="-0.39" y2="3.1" layer="51"/>
-<rectangle x1="-2.15" y1="2" x2="-1.66" y2="3.1" layer="51"/>
-</package>
-</packages>
-</library>
 </libraries>
 <attributes>
 </attributes>
@@ -3734,18 +3698,6 @@ design rules under a new name.</description>
 <element name="JP1" library="pinhead" package="1X01" value="" x="4.44" y="27.31"/>
 <element name="JP2" library="pinhead" package="1X02" value="" x="14.135" y="45.72" rot="R90"/>
 <element name="JP3" library="pinhead" package="1X01" value="" x="3.18" y="34.29"/>
-<element name="IC2" library="ir" package="SO08" value="IR4427S" x="27.94" y="38.1" rot="R90">
-<attribute name="OC_NEWARK" value="63J7933" x="27.94" y="38.1" size="1.778" layer="27" rot="R90" display="off"/>
-<attribute name="MPN" value="IR4427STRPBF" x="27.94" y="38.1" size="1.778" layer="27" rot="R90" display="off"/>
-<attribute name="MF" value="INTERNATIONAL RECTIFIER(IR)" x="27.94" y="38.1" size="1.778" layer="27" rot="R90" display="off"/>
-<attribute name="OC_FARNELL" value="8639094" x="27.94" y="38.1" size="1.778" layer="27" rot="R90" display="off"/>
-</element>
-<element name="IC3" library="ir" package="SO08" value="IR4427S" x="21.59" y="25.4" rot="R90">
-<attribute name="OC_NEWARK" value="63J7933" x="21.59" y="25.4" size="1.778" layer="27" rot="R90" display="off"/>
-<attribute name="MPN" value="IR4427STRPBF" x="21.59" y="25.4" size="1.778" layer="27" rot="R90" display="off"/>
-<attribute name="MF" value="INTERNATIONAL RECTIFIER(IR)" x="21.59" y="25.4" size="1.778" layer="27" rot="R90" display="off"/>
-<attribute name="OC_FARNELL" value="8639094" x="21.59" y="25.4" size="1.778" layer="27" rot="R90" display="off"/>
-</element>
 </elements>
 <signals>
 <signal name="VDD">
@@ -4139,10 +4091,6 @@ design rules under a new name.</description>
 <wire x1="4.09" y1="22.225" x2="3.175" y2="22.225" width="0.6096" layer="16"/>
 <wire x1="3.175" y1="22.225" x2="2.54" y2="22.86" width="0.6096" layer="16" curve="-90"/>
 <wire x1="2.54" y1="22.86" x2="2.54" y2="29.21" width="0.6096" layer="16"/>
-<contactref element="IC3" pad="3"/>
-<contactref element="IC2" pad="3"/>
-<wire x1="28.16" y1="31.115" x2="23.94" y2="26.035" width="0" layer="19" extent="1-1"/>
-<wire x1="30.29" y1="38.735" x2="33.81" y2="8.255" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="CE">
 <contactref element="U$1" pad="9"/>
@@ -4354,8 +4302,6 @@ design rules under a new name.</description>
 <vertex x="82.55" y="1.27"/>
 <vertex x="73.66" y="1.27"/>
 </polygon>
-<contactref element="IC2" pad="6"/>
-<wire x1="32.385" y1="9.525" x2="25.59" y2="38.735" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="PWM_1">
 <contactref element="W1" pad="12"/>
@@ -4364,8 +4310,6 @@ design rules under a new name.</description>
 <wire x1="19.8" y1="34.48" x2="19.97" y2="34.65" width="0.3048" layer="1" curve="90"/>
 <wire x1="19.97" y1="34.65" x2="20.245" y2="34.925" width="0.3048" layer="1" curve="-90"/>
 <wire x1="20.245" y1="34.925" x2="24.61" y2="34.925" width="0.3048" layer="1"/>
-<contactref element="IC2" pad="2"/>
-<wire x1="30.29" y1="37.465" x2="24.61" y2="34.925" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="PWM_3">
 <contactref element="W2" pad="12"/>
@@ -4418,8 +4362,6 @@ design rules under a new name.</description>
 <wire x1="19.53" y1="33.83" x2="19.97" y2="33.39" width="0.3048" layer="1" curve="-90"/>
 <wire x1="24.61" y1="32.385" x2="20.975" y2="32.385" width="0.3048" layer="1"/>
 <wire x1="20.975" y1="32.385" x2="19.97" y2="33.39" width="0.3048" layer="1" curve="-90"/>
-<contactref element="IC2" pad="4"/>
-<wire x1="30.29" y1="40.005" x2="24.61" y2="32.385" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="VDD5">
 <contactref element="RSC2" pad="1"/>
@@ -4519,8 +4461,6 @@ design rules under a new name.</description>
 <wire x1="39.175" y1="41.395" x2="38.1" y2="40.32" width="0.6096" layer="1" curve="90"/>
 <wire x1="33.81" y1="38.735" x2="35.395" y2="40.32" width="0.6096" layer="1" curve="-90"/>
 <wire x1="35.395" y1="40.32" x2="38.1" y2="40.32" width="0.6096" layer="1"/>
-<contactref element="IC2" pad="7"/>
-<wire x1="25.59" y1="37.465" x2="33.81" y2="38.735" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="PWM-CH3-I">
 <contactref element="R2" pad="1"/>
@@ -4562,8 +4502,6 @@ design rules under a new name.</description>
 <wire x1="39.175" y1="29.965" x2="38.1" y2="28.89" width="0.6096" layer="1" curve="90"/>
 <wire x1="33.81" y1="29.845" x2="34.765" y2="28.89" width="0.6096" layer="1" curve="90"/>
 <wire x1="34.765" y1="28.89" x2="38.1" y2="28.89" width="0.6096" layer="1"/>
-<contactref element="IC2" pad="5"/>
-<wire x1="25.59" y1="40.005" x2="34.765" y2="28.89" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$1">
 <contactref element="L2" pad="1"/>
@@ -4620,9 +4558,6 @@ design rules under a new name.</description>
 <wire x1="52.7" y1="6.35" x2="50.8" y2="6.35" width="0.6096" layer="1"/>
 <wire x1="54.15" y1="5.08" x2="50.8" y2="5.08" width="0.6096" layer="1"/>
 <wire x1="50.8" y1="6.35" x2="50.8" y2="5.08" width="0" layer="19" extent="1-1"/>
-</signal>
-<signal name="VS">
-<contactref element="IC3" pad="6"/>
 </signal>
 </signals>
 <errors>

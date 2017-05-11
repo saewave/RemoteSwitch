@@ -17942,124 +17942,6 @@ Grid 5.00 mm&lt;p&gt;
 </deviceset>
 </devicesets>
 </library>
-<library name="ir">
-<description>&lt;b&gt;IR&lt;/b&gt; International Rectifier&lt;p&gt;
-www.irf.com</description>
-<packages>
-<package name="DIL08">
-<description>&lt;b&gt;Dual In Line Package&lt;/b&gt;</description>
-<wire x1="5.08" y1="2.921" x2="-5.08" y2="2.921" width="0.1524" layer="21"/>
-<wire x1="-5.08" y1="-2.921" x2="5.08" y2="-2.921" width="0.1524" layer="21"/>
-<wire x1="5.08" y1="2.921" x2="5.08" y2="-2.921" width="0.1524" layer="21"/>
-<wire x1="-5.08" y1="2.921" x2="-5.08" y2="1.016" width="0.1524" layer="21"/>
-<wire x1="-5.08" y1="-2.921" x2="-5.08" y2="-1.016" width="0.1524" layer="21"/>
-<wire x1="-5.08" y1="1.016" x2="-5.08" y2="-1.016" width="0.1524" layer="21" curve="-180"/>
-<pad name="1" x="-3.81" y="-3.81" drill="0.8" diameter="1.4" rot="R90"/>
-<pad name="2" x="-1.27" y="-3.81" drill="0.8" diameter="1.4" rot="R90"/>
-<pad name="7" x="-1.27" y="3.81" drill="0.8" diameter="1.4" rot="R90"/>
-<pad name="8" x="-3.81" y="3.81" drill="0.8" diameter="1.4" rot="R90"/>
-<pad name="3" x="1.27" y="-3.81" drill="0.8" diameter="1.4" rot="R90"/>
-<pad name="4" x="3.81" y="-3.81" drill="0.8" diameter="1.4" rot="R90"/>
-<pad name="6" x="1.27" y="3.81" drill="0.8" diameter="1.4" rot="R90"/>
-<pad name="5" x="3.81" y="3.81" drill="0.8" diameter="1.4" rot="R90"/>
-<text x="-5.334" y="-2.921" size="1.27" layer="25" ratio="10" rot="R90">&gt;NAME</text>
-<text x="-3.556" y="-0.635" size="1.27" layer="27" ratio="10">&gt;VALUE</text>
-</package>
-<package name="SO08">
-<description>&lt;b&gt;8 Lead SOIC&lt;/b&gt;&lt;p&gt;
-Data Sheet No. PD60212 Rev A&lt;br&gt;
-Source: www.irf.com .. ir2520.pdf</description>
-<wire x1="2.4" y1="1.9" x2="2.4" y2="-1.4" width="0.2032" layer="51"/>
-<wire x1="2.4" y1="-1.4" x2="2.4" y2="-1.9" width="0.2032" layer="51"/>
-<wire x1="2.4" y1="-1.9" x2="-2.4" y2="-1.9" width="0.2032" layer="51"/>
-<wire x1="-2.4" y1="-1.9" x2="-2.4" y2="-1.4" width="0.2032" layer="51"/>
-<wire x1="-2.4" y1="-1.4" x2="-2.4" y2="1.9" width="0.2032" layer="51"/>
-<wire x1="-2.4" y1="1.9" x2="2.4" y2="1.9" width="0.2032" layer="51"/>
-<wire x1="2.4" y1="-1.4" x2="-2.4" y2="-1.4" width="0.2032" layer="51"/>
-<smd name="2" x="-0.635" y="-2.35" dx="0.72" dy="1.78" layer="1"/>
-<smd name="7" x="-0.635" y="2.35" dx="0.72" dy="1.78" layer="1"/>
-<smd name="1" x="-1.905" y="-2.35" dx="0.72" dy="1.78" layer="1"/>
-<smd name="3" x="0.635" y="-2.35" dx="0.72" dy="1.78" layer="1"/>
-<smd name="4" x="1.905" y="-2.35" dx="0.72" dy="1.78" layer="1"/>
-<smd name="8" x="-1.905" y="2.35" dx="0.72" dy="1.78" layer="1"/>
-<smd name="6" x="0.635" y="2.35" dx="0.72" dy="1.78" layer="1"/>
-<smd name="5" x="1.905" y="2.35" dx="0.72" dy="1.78" layer="1"/>
-<text x="-2.667" y="-1.905" size="1.27" layer="25" rot="R90">&gt;NAME</text>
-<text x="3.937" y="-1.905" size="1.27" layer="27" rot="R90">&gt;VALUE</text>
-<rectangle x1="-2.15" y1="-3.1" x2="-1.66" y2="-2" layer="51"/>
-<rectangle x1="-0.88" y1="-3.1" x2="-0.39" y2="-2" layer="51"/>
-<rectangle x1="0.39" y1="-3.1" x2="0.88" y2="-2" layer="51"/>
-<rectangle x1="1.66" y1="-3.1" x2="2.15" y2="-2" layer="51"/>
-<rectangle x1="1.66" y1="2" x2="2.15" y2="3.1" layer="51"/>
-<rectangle x1="0.39" y1="2" x2="0.88" y2="3.1" layer="51"/>
-<rectangle x1="-0.88" y1="2" x2="-0.39" y2="3.1" layer="51"/>
-<rectangle x1="-2.15" y1="2" x2="-1.66" y2="3.1" layer="51"/>
-</package>
-</packages>
-<symbols>
-<symbol name="IR4427">
-<wire x1="-7.62" y1="7.62" x2="10.16" y2="7.62" width="0.254" layer="94"/>
-<wire x1="10.16" y1="7.62" x2="10.16" y2="-7.62" width="0.254" layer="94"/>
-<wire x1="10.16" y1="-7.62" x2="-7.62" y2="-7.62" width="0.254" layer="94"/>
-<wire x1="-7.62" y1="-7.62" x2="-7.62" y2="7.62" width="0.254" layer="94"/>
-<text x="-7.62" y="8.89" size="1.778" layer="95">&gt;NAME</text>
-<text x="-7.62" y="-10.16" size="1.778" layer="96">&gt;VALUE</text>
-<pin name="INA" x="-10.16" y="2.54" length="short" direction="in"/>
-<pin name="INB" x="-10.16" y="-2.54" length="short" direction="in"/>
-<pin name="OUTA" x="12.7" y="2.54" length="short" direction="out" rot="R180"/>
-<pin name="OUTB" x="12.7" y="-2.54" length="short" direction="out" rot="R180"/>
-<pin name="GND" x="12.7" y="-5.08" length="short" direction="pwr" rot="R180"/>
-<pin name="VS" x="12.7" y="5.08" length="short" direction="pwr" rot="R180"/>
-</symbol>
-</symbols>
-<devicesets>
-<deviceset name="IR4427" prefix="IC">
-<description>&lt;b&gt;DUAL LOW SIDE DRIVER&lt;/b&gt;&lt;p&gt;
-Source: ID4426.pdf</description>
-<gates>
-<gate name="P" symbol="IR4427" x="0" y="0"/>
-</gates>
-<devices>
-<device name="" package="DIL08">
-<connects>
-<connect gate="P" pin="GND" pad="3"/>
-<connect gate="P" pin="INA" pad="2"/>
-<connect gate="P" pin="INB" pad="4"/>
-<connect gate="P" pin="OUTA" pad="7"/>
-<connect gate="P" pin="OUTB" pad="5"/>
-<connect gate="P" pin="VS" pad="6"/>
-</connects>
-<technologies>
-<technology name="">
-<attribute name="MF" value="INTERNATIONAL RECTIFIER(IR)" constant="no"/>
-<attribute name="MPN" value="IR4427" constant="no"/>
-<attribute name="OC_FARNELL" value="1023267" constant="no"/>
-<attribute name="OC_NEWARK" value="27C6914" constant="no"/>
-</technology>
-</technologies>
-</device>
-<device name="S" package="SO08">
-<connects>
-<connect gate="P" pin="GND" pad="3"/>
-<connect gate="P" pin="INA" pad="2"/>
-<connect gate="P" pin="INB" pad="4"/>
-<connect gate="P" pin="OUTA" pad="7"/>
-<connect gate="P" pin="OUTB" pad="5"/>
-<connect gate="P" pin="VS" pad="6"/>
-</connects>
-<technologies>
-<technology name="">
-<attribute name="MF" value="INTERNATIONAL RECTIFIER(IR)" constant="no"/>
-<attribute name="MPN" value="IR4427STRPBF" constant="no"/>
-<attribute name="OC_FARNELL" value="8639094" constant="no"/>
-<attribute name="OC_NEWARK" value="63J7933" constant="no"/>
-</technology>
-</technologies>
-</device>
-</devices>
-</deviceset>
-</devicesets>
-</library>
 </libraries>
 <attributes>
 </attributes>
@@ -18146,8 +18028,6 @@ Source: ID4426.pdf</description>
 <part name="JP1" library="pinhead" deviceset="PINHD-1X1" device=""/>
 <part name="JP2" library="pinhead" deviceset="PINHD-1X2" device=""/>
 <part name="JP3" library="pinhead" deviceset="PINHD-1X1" device=""/>
-<part name="IC2" library="ir" deviceset="IR4427" device="S"/>
-<part name="IC3" library="ir" deviceset="IR4427" device="S"/>
 </parts>
 <sheets>
 <sheet>
@@ -18238,8 +18118,6 @@ Source: ID4426.pdf</description>
 <instance part="JP1" gate="G$1" x="119.38" y="20.32"/>
 <instance part="JP2" gate="G$1" x="88.9" y="76.2"/>
 <instance part="JP3" gate="G$1" x="5.08" y="53.34" rot="R180"/>
-<instance part="IC2" gate="P" x="127" y="81.28"/>
-<instance part="IC3" gate="P" x="170.18" y="-12.7"/>
 </instances>
 <busses>
 </busses>
@@ -18547,11 +18425,6 @@ Source: ID4426.pdf</description>
 <wire x1="86.36" y1="76.2" x2="76.2" y2="76.2" width="0.1524" layer="91"/>
 <label x="76.2" y="76.2" size="1.778" layer="95"/>
 </segment>
-<segment>
-<pinref part="IC2" gate="P" pin="GND"/>
-<wire x1="139.7" y1="76.2" x2="144.78" y2="76.2" width="0.1524" layer="91"/>
-<label x="144.78" y="76.2" size="1.778" layer="95"/>
-</segment>
 </net>
 <net name="CE" class="0">
 <segment>
@@ -18800,11 +18673,6 @@ Source: ID4426.pdf</description>
 <wire x1="330.2" y1="53.34" x2="325.12" y2="53.34" width="0.1524" layer="91"/>
 <label x="325.12" y="53.34" size="1.778" layer="95"/>
 </segment>
-<segment>
-<pinref part="IC2" gate="P" pin="VS"/>
-<wire x1="139.7" y1="86.36" x2="144.78" y2="86.36" width="0.1524" layer="91"/>
-<label x="144.78" y="86.36" size="1.778" layer="95"/>
-</segment>
 </net>
 <net name="PWM_1" class="0">
 <segment>
@@ -18816,11 +18684,6 @@ Source: ID4426.pdf</description>
 <pinref part="U$1" gate="G$1" pin="PA10"/>
 <wire x1="78.74" y1="38.1" x2="86.36" y2="38.1" width="0.1524" layer="91"/>
 <label x="86.36" y="38.1" size="1.778" layer="95"/>
-</segment>
-<segment>
-<pinref part="IC2" gate="P" pin="INA"/>
-<wire x1="116.84" y1="83.82" x2="111.76" y2="83.82" width="0.1524" layer="91"/>
-<label x="111.76" y="83.82" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="PWM_3" class="0">
@@ -18898,11 +18761,6 @@ Source: ID4426.pdf</description>
 <pinref part="U$1" gate="G$1" pin="PA9"/>
 <wire x1="78.74" y1="40.64" x2="86.36" y2="40.64" width="0.1524" layer="91"/>
 <label x="86.36" y="40.64" size="1.778" layer="95"/>
-</segment>
-<segment>
-<pinref part="IC2" gate="P" pin="INB"/>
-<wire x1="116.84" y1="78.74" x2="111.76" y2="78.74" width="0.1524" layer="91"/>
-<label x="111.76" y="78.74" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="VDD5" class="0">
@@ -19043,11 +18901,6 @@ Source: ID4426.pdf</description>
 <wire x1="182.88" y1="66.04" x2="190.5" y2="66.04" width="0.1524" layer="91"/>
 <label x="185.42" y="66.04" size="1.778" layer="95"/>
 </segment>
-<segment>
-<pinref part="IC2" gate="P" pin="OUTA"/>
-<wire x1="139.7" y1="83.82" x2="144.78" y2="83.82" width="0.1524" layer="91"/>
-<label x="144.78" y="83.82" size="1.778" layer="95"/>
-</segment>
 </net>
 <net name="PWM-CH3-I" class="0">
 <segment>
@@ -19107,11 +18960,6 @@ Source: ID4426.pdf</description>
 <pinref part="W1" gate="G$1" pin="LO"/>
 <wire x1="182.88" y1="48.26" x2="190.5" y2="48.26" width="0.1524" layer="91"/>
 <label x="185.42" y="48.26" size="1.778" layer="95"/>
-</segment>
-<segment>
-<pinref part="IC2" gate="P" pin="OUTB"/>
-<wire x1="139.7" y1="78.74" x2="144.78" y2="78.74" width="0.1524" layer="91"/>
-<label x="144.78" y="78.74" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="N$1" class="0">
