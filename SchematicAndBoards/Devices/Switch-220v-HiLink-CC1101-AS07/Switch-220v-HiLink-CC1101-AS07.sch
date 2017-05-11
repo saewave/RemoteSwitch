@@ -11691,6 +11691,7 @@ Please send any comments to: &lt;a href="mailto:messi@users.sourceforge.net"&gt;
 <segment>
 <wire x1="7.62" y1="22.86" x2="2.54" y2="22.86" width="0.1524" layer="91"/>
 <pinref part="S1" gate="G$1" pin="2"/>
+<label x="0" y="22.86" size="1.778" layer="95"/>
 </segment>
 <segment>
 <pinref part="SWD" gate="A" pin="6"/>
@@ -11795,6 +11796,7 @@ Please send any comments to: &lt;a href="mailto:messi@users.sourceforge.net"&gt;
 <segment>
 <pinref part="R5" gate="G$1" pin="1"/>
 <wire x1="27.94" y1="12.7" x2="27.94" y2="10.16" width="0.1524" layer="91"/>
+<label x="27.94" y="7.62" size="1.778" layer="95" rot="R90"/>
 </segment>
 <segment>
 <pinref part="R6" gate="G$1" pin="1"/>
