@@ -7507,7 +7507,7 @@ With round pins</description>
 <part name="1-WARE" library="pinhead" deviceset="PINHD-1X3" device=""/>
 <part name="CH-OUT" library="pinhead" deviceset="PINHD-1X4" device="_2.54"/>
 <part name="R1" library="resistor" deviceset="R-EU_" device="R0805"/>
-<part name="U$2" library="my_components" deviceset="TPS6122" device=""/>
+<part name="U$2" library="my_components" deviceset="TPS6122" device="" value="TPS61221"/>
 <part name="L2" library="SparkFun-Passives" deviceset="INDUCTOR" device="1210"/>
 <part name="U$3" library="RemoteSwitchComponents" deviceset="AS07-M1101S" device="" value="AS07-M1101S"/>
 <part name="U$4" library="RemoteSwitchComponents" deviceset="BAT-AA1-PCB-HOLDER" device=""/>
@@ -7851,6 +7851,11 @@ With round pins</description>
 <wire x1="0" y1="142.24" x2="-5.08" y2="142.24" width="0.1524" layer="91"/>
 <wire x1="-5.08" y1="142.24" x2="-5.08" y2="124.46" width="0.1524" layer="91"/>
 </segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="PA0"/>
+<wire x1="78.74" y1="60.96" x2="86.36" y2="60.96" width="0.1524" layer="91"/>
+<label x="86.36" y="60.96" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="1-WARE" class="0">
 <segment>
@@ -7867,6 +7872,7 @@ With round pins</description>
 <segment>
 <pinref part="U$1" gate="G$1" pin="PA3"/>
 <wire x1="78.74" y1="53.34" x2="86.36" y2="53.34" width="0.1524" layer="91"/>
+<label x="86.36" y="53.34" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="USART_TX" class="0">
