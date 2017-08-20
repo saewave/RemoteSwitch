@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="7.7.0">
+<eagle version="8.2.1">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -6463,10 +6463,6 @@ Find the newest version at https://github.com/blddk/EagleLbr/</description>
 <pad name="AC_N" x="-14.7" y="-2.5" drill="1" diameter="2" shape="octagon"/>
 <pad name="VO-" x="14.7" y="7.7" drill="1" diameter="2" shape="octagon"/>
 <pad name="VO+" x="14.7" y="-7.7" drill="1" diameter="2" shape="octagon"/>
-<text x="0" y="0" size="2" layer="21" font="vector" ratio="10" align="center">HI-LINK
-HLK-PM01
-
-600mA @ 5V</text>
 <wire x1="12.7" y1="7.62" x2="10.16" y2="7.62" width="0.508" layer="21"/>
 <wire x1="12.7" y1="-7.62" x2="10.16" y2="-7.62" width="0.508" layer="21"/>
 <wire x1="11.43" y1="-6.35" x2="11.43" y2="-8.89" width="0.508" layer="21"/>
@@ -11594,7 +11590,7 @@ Please send any comments to: &lt;a href="mailto:messi@users.sourceforge.net"&gt;
 </class>
 </classes>
 <parts>
-<part name="U$1" library="stm32f030f4" deviceset="STM32F030F4" device=""/>
+<part name="U1" library="stm32f030f4" deviceset="STM32F030F4" device=""/>
 <part name="SWD" library="adafruit" deviceset="PINHD-1X6" device="B"/>
 <part name="C1" library="resistor" deviceset="C-EU" device="C0805"/>
 <part name="OK1" library="optocoupler" deviceset="4N*?M" device="S" technology="25" value="4N25SM"/>
@@ -11626,7 +11622,7 @@ Please send any comments to: &lt;a href="mailto:messi@users.sourceforge.net"&gt;
 <plain>
 </plain>
 <instances>
-<instance part="U$1" gate="G$1" x="58.42" y="45.72"/>
+<instance part="U1" gate="G$1" x="58.42" y="45.72"/>
 <instance part="SWD" gate="A" x="137.16" y="10.16"/>
 <instance part="C1" gate="G$1" x="20.32" y="48.26"/>
 <instance part="OK1" gate="G$1" x="116.84" y="53.34"/>
@@ -11660,10 +11656,10 @@ Please send any comments to: &lt;a href="mailto:messi@users.sourceforge.net"&gt;
 <nets>
 <net name="VDD" class="0">
 <segment>
-<pinref part="U$1" gate="G$1" pin="VDDA"/>
+<pinref part="U1" gate="G$1" pin="VDDA"/>
 <wire x1="40.64" y1="58.42" x2="33.02" y2="58.42" width="0.1524" layer="91"/>
 <label x="33.02" y="58.42" size="1.778" layer="95"/>
-<pinref part="U$1" gate="G$1" pin="VDD"/>
+<pinref part="U1" gate="G$1" pin="VDD"/>
 <wire x1="40.64" y1="60.96" x2="33.02" y2="60.96" width="0.1524" layer="91"/>
 <label x="33.02" y="60.96" size="1.778" layer="95"/>
 <wire x1="33.02" y1="58.42" x2="33.02" y2="60.96" width="0.1524" layer="91"/>
@@ -11701,7 +11697,7 @@ Please send any comments to: &lt;a href="mailto:messi@users.sourceforge.net"&gt;
 </net>
 <net name="SWCLK" class="0">
 <segment>
-<pinref part="U$1" gate="G$1" pin="PA14"/>
+<pinref part="U1" gate="G$1" pin="PA14"/>
 <wire x1="78.74" y1="33.02" x2="86.36" y2="33.02" width="0.1524" layer="91"/>
 <label x="86.36" y="33.02" size="1.778" layer="95"/>
 </segment>
@@ -11713,7 +11709,7 @@ Please send any comments to: &lt;a href="mailto:messi@users.sourceforge.net"&gt;
 </net>
 <net name="SWDIO" class="0">
 <segment>
-<pinref part="U$1" gate="G$1" pin="PA13"/>
+<pinref part="U1" gate="G$1" pin="PA13"/>
 <wire x1="78.74" y1="35.56" x2="86.36" y2="35.56" width="0.1524" layer="91"/>
 <label x="86.36" y="35.56" size="1.778" layer="95"/>
 </segment>
@@ -11725,7 +11721,7 @@ Please send any comments to: &lt;a href="mailto:messi@users.sourceforge.net"&gt;
 </net>
 <net name="NRST" class="0">
 <segment>
-<pinref part="U$1" gate="G$1" pin="NRST"/>
+<pinref part="U1" gate="G$1" pin="NRST"/>
 <label x="33.02" y="53.34" size="1.778" layer="95"/>
 <wire x1="40.64" y1="53.34" x2="20.32" y2="53.34" width="0.1524" layer="91"/>
 <pinref part="C1" gate="G$1" pin="1"/>
@@ -11739,12 +11735,12 @@ Please send any comments to: &lt;a href="mailto:messi@users.sourceforge.net"&gt;
 </net>
 <net name="GND" class="0">
 <segment>
-<pinref part="U$1" gate="G$1" pin="BOOT0"/>
+<pinref part="U1" gate="G$1" pin="BOOT0"/>
 <wire x1="40.64" y1="30.48" x2="35.56" y2="30.48" width="0.1524" layer="91"/>
 <label x="35.56" y="30.48" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U$1" gate="G$1" pin="VSS"/>
+<pinref part="U1" gate="G$1" pin="VSS"/>
 <wire x1="40.64" y1="27.94" x2="35.56" y2="27.94" width="0.1524" layer="91"/>
 <label x="35.56" y="27.94" size="1.778" layer="95"/>
 </segment>
@@ -11806,7 +11802,7 @@ Please send any comments to: &lt;a href="mailto:messi@users.sourceforge.net"&gt;
 </net>
 <net name="SCK" class="0">
 <segment>
-<pinref part="U$1" gate="G$1" pin="PA5"/>
+<pinref part="U1" gate="G$1" pin="PA5"/>
 <wire x1="78.74" y1="48.26" x2="86.36" y2="48.26" width="0.1524" layer="91"/>
 <label x="86.36" y="48.26" size="1.778" layer="95"/>
 </segment>
@@ -11818,7 +11814,7 @@ Please send any comments to: &lt;a href="mailto:messi@users.sourceforge.net"&gt;
 </net>
 <net name="MISO" class="0">
 <segment>
-<pinref part="U$1" gate="G$1" pin="PA6"/>
+<pinref part="U1" gate="G$1" pin="PA6"/>
 <wire x1="78.74" y1="45.72" x2="86.36" y2="45.72" width="0.1524" layer="91"/>
 <label x="86.36" y="45.72" size="1.778" layer="95"/>
 </segment>
@@ -11830,7 +11826,7 @@ Please send any comments to: &lt;a href="mailto:messi@users.sourceforge.net"&gt;
 </net>
 <net name="CSN" class="0">
 <segment>
-<pinref part="U$1" gate="G$1" pin="PA3"/>
+<pinref part="U1" gate="G$1" pin="PA3"/>
 <wire x1="78.74" y1="53.34" x2="86.36" y2="53.34" width="0.1524" layer="91"/>
 <label x="86.36" y="53.34" size="1.778" layer="95"/>
 </segment>
@@ -11842,7 +11838,7 @@ Please send any comments to: &lt;a href="mailto:messi@users.sourceforge.net"&gt;
 </net>
 <net name="MOSI" class="0">
 <segment>
-<pinref part="U$1" gate="G$1" pin="PA7"/>
+<pinref part="U1" gate="G$1" pin="PA7"/>
 <wire x1="78.74" y1="43.18" x2="86.36" y2="43.18" width="0.1524" layer="91"/>
 <label x="86.36" y="43.18" size="1.778" layer="95"/>
 </segment>
@@ -11854,7 +11850,7 @@ Please send any comments to: &lt;a href="mailto:messi@users.sourceforge.net"&gt;
 </net>
 <net name="IRQ" class="0">
 <segment>
-<pinref part="U$1" gate="G$1" pin="PB1"/>
+<pinref part="U1" gate="G$1" pin="PB1"/>
 <wire x1="78.74" y1="27.94" x2="86.36" y2="27.94" width="0.1524" layer="91"/>
 <label x="86.36" y="27.94" size="1.778" layer="95"/>
 </segment>
@@ -11926,14 +11922,14 @@ Please send any comments to: &lt;a href="mailto:messi@users.sourceforge.net"&gt;
 <wire x1="101.6" y1="73.66" x2="101.6" y2="81.28" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="U$1" gate="G$1" pin="PA10"/>
+<pinref part="U1" gate="G$1" pin="PA10"/>
 <wire x1="78.74" y1="38.1" x2="86.36" y2="38.1" width="0.1524" layer="91"/>
 <label x="86.36" y="38.1" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="USART_TX" class="0">
 <segment>
-<pinref part="U$1" gate="G$1" pin="PA9"/>
+<pinref part="U1" gate="G$1" pin="PA9"/>
 <wire x1="78.74" y1="40.64" x2="86.36" y2="40.64" width="0.1524" layer="91"/>
 <label x="86.36" y="40.64" size="1.778" layer="95"/>
 </segment>
@@ -11972,7 +11968,7 @@ Please send any comments to: &lt;a href="mailto:messi@users.sourceforge.net"&gt;
 <label x="33.02" y="22.86" size="1.778" layer="95"/>
 </segment>
 <segment>
-<pinref part="U$1" gate="G$1" pin="PA4"/>
+<pinref part="U1" gate="G$1" pin="PA4"/>
 <wire x1="78.74" y1="50.8" x2="86.36" y2="50.8" width="0.1524" layer="91"/>
 <label x="86.36" y="50.8" size="1.778" layer="95"/>
 </segment>
@@ -12011,7 +12007,7 @@ Please send any comments to: &lt;a href="mailto:messi@users.sourceforge.net"&gt;
 </net>
 <net name="LED" class="0">
 <segment>
-<pinref part="U$1" gate="G$1" pin="PA2"/>
+<pinref part="U1" gate="G$1" pin="PA2"/>
 <wire x1="78.74" y1="55.88" x2="86.36" y2="55.88" width="0.1524" layer="91"/>
 <label x="86.36" y="55.88" size="1.778" layer="95"/>
 </segment>
@@ -12027,10 +12023,4 @@ Please send any comments to: &lt;a href="mailto:messi@users.sourceforge.net"&gt;
 </sheets>
 </schematic>
 </drawing>
-<compatibility>
-<note version="6.3" minversion="6.2.2" severity="warning">
-Since Version 6.2.2 text objects can contain more than one line,
-which will not be processed correctly with this version.
-</note>
-</compatibility>
 </eagle>
