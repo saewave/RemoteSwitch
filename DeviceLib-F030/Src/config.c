@@ -1,5 +1,5 @@
 #include "config.h"
-#include "nRF24L01P.h"
+#include "CC1101.h"
 
 void readConfig(void)
 {
@@ -20,6 +20,6 @@ void readConfig(void)
         dxprintf("%x ", Config[i + 1]);
     }
     dxprintf("\n");
-    nRF24_SetDeviceAddress(&Config[0], 1);
-    nRF24_SetHUBAddress(&Config[5]);
+    Transceiver_SetDeviceAddress(&Config[0], 1);
+    Transceiver_SetHUBAddress(&Config[5]);
 }

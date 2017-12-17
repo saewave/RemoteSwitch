@@ -13,7 +13,7 @@
 
 #include "rf_cmd.h"
 #include "config.h"
-#include "nRF24L01P.h"
+#include "CC1101.h"
 #include "rf_cmd_exec.h"
 #include <string.h>
 
@@ -73,11 +73,11 @@ void ProcessData(uint8_t *Data, uint8_t Length)
 
     case rfCMD_DISCOVER:
     { // CMD: Assign new address
-        nRF24_SetHUBAddress(HUBAddress);
+        Transceiver_SetHUBAddress(HUBAddress);
 
-        nRF24_SetDeviceAddress(&Data[Pos], Data[Pos + 5]);
+        Transceiver_SetDeviceAddress(&Data[Pos], Data[Pos + 5]);
         Pos += 5;
-        uint8_t *NewAddressAfter = nRF24_GetDeviceAddress();
+        uint8_t *NewAddressAfter = Transceiver_GetDeviceAddress();
         SaveAddress(NewAddressAfter, HUBAddress);
 
         uint8_t tBuf[6];
@@ -131,14 +131,14 @@ void SaveAddress(uint8_t *Address, uint8_t *HubAddress)
 
 void SendCommandToHub(uint8_t Command, uint8_t *Data, uint8_t Size)
 {
-    uint8_t *HUBAddress    = nRF24_GetHUBAddress();
-    uint8_t *DeviceAddress = nRF24_GetDeviceAddress();
+    uint8_t *HUBAddress    = Transceiver_GetHUBAddress();
+    uint8_t *DeviceAddress = Transceiver_GetDeviceAddress();
     uint8_t  tBuf[32];
     tBuf[0] = 0x10;
     memcpy(&tBuf[1], DeviceAddress, 5);
     tBuf[6] = Command; //Command
     memcpy(&tBuf[7], Data, Size);
     dxprintf("**** CMD: %x, S: %d\n", Command, Size);
-    nRF24_SetSwitchTo(nRF24_SWITCH_TO_RX);
-    nRF24_TXPacket(HUBAddress, tBuf, 7 + Size);
+    //Transceiver_SetSwitchTo(nRF24_SWITCH_TO_RX);
+    Transceiver_TxData(HUBAddress, tBuf, 7 + Size);
 }
