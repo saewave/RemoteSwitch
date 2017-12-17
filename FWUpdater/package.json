@@ -7,7 +7,12 @@
     "async": "^2.6.0",
     "colors": "^1.1.2",
     "command-line-args": "^4.0.7",
-    "serialport": "^6.0.4"
+    "intel-hex": "^0.1.1",
+    "nrf-intel-hex": "^1.1.0",
+    "progress": "^2.0.0",
+    "serialport": "^6.0.4",
+    "status": "0.0.13",
+    "virtual-serialport": "^4.0.1"
   },
   "devDependencies": {},
   "scripts": {
