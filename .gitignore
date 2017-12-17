@@ -27,7 +27,7 @@ RTE
 /Bootloader/B*
 
 /AES
-/node_modules
+node_modules
 
 *.uvoptx
 *.tmp
