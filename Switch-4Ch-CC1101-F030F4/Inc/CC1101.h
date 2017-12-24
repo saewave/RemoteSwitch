@@ -120,6 +120,8 @@
 
 #define CCxxx0_SYNC_WORD0 0xE3
 #define CCxxx0_SYNC_WORD1 0x66
+#define CCxxx0_PAYLOAD_LENGTH 58
+#define CCxxx0_BUFFER_LENGTH 64
 #define Transceiver_ADDR_LENGTH 2
 #define Transceiver_ADD_RSSI_LQI 1
 
@@ -127,6 +129,7 @@ void Transceiver_Reset(void);
 void Transceiver_Configure(void);
 void Transceiver_TxMode(void);
 void Transceiver_RxMode(void);
+void Transceiver_SPWDMode(void);
 void Transceiver_WriteReg(uint8_t Reg, uint8_t Value);
 uint8_t Transceiver_WriteStrobe(uint8_t Strobe);
 void Transceiver_WriteBurstReg(uint8_t Address, uint8_t *Buf, uint8_t Length);

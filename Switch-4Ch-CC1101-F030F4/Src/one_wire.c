@@ -1,4 +1,5 @@
 #include "one_wire.h"
+#include "F030f4_Peripheral.h"
 
 uint32_t PRESENCE_TIMEOUT = 5000;
 
@@ -31,12 +32,13 @@ void OneWire_SetPin(uint8_t GPIO_PinState)
     }
 }
 
-uint16_t OneWireReadTemp(void)
+uint8_t * OneWireReadTemp(void)
 {
+    static uint8_t Temp[2] = {0xFF, 0xFF};
     /* Start temp */
     if (OneWire_CheckPresence() != 1)
     {
-        return 0xFFFF;
+        return Temp;
     }
 
     for (uint16_t i = 0; i < ONE_WIRE_BIT_0; i++)
@@ -52,34 +54,35 @@ uint16_t OneWireReadTemp(void)
     //  OneWire.GPIOx->BSRR = (uint32_t)OneWire.GPIO_Pin;   //Set pin
     OneWire_SetPin(GPIO_PIN_SET);
 
-    ChangePinDirection(OneWireInputMode);
+//    ChangePinDirection(OneWireInputMode);
     while ((OneWireGPIO.GPIOx->IDR & OneWireGPIO.GPIO_Pin) == (uint32_t)GPIO_PIN_RESET)
         ;
 
     if (OneWire_CheckPresence() != 1)
     {
-        return 0xFFF0;
+        return Temp;
     }
 
     Delay_us(ONE_WIRE_BIT_0);
     OneWire_SendByte(0xCC);
     OneWire_SendByte(0xBE);
-    uint16_t b1 = OneWire_ReadByte();
-    uint16_t b2 = OneWire_ReadByte();
+    
+    Temp[1] = OneWire_ReadByte();
+    Temp[0] = OneWire_ReadByte();
 
-    return (b2 << 8) | b1;
+    return Temp;
 }
 
 uint8_t OneWire_CheckPresence(void)
 {
-    ChangePinDirection(OneWireOutputMode);
+//    ChangePinDirection(OneWireOutputMode);
     uint32_t Timeout = PRESENCE_TIMEOUT;
     OneWire_SetPin(GPIO_PIN_RESET);
     for (uint16_t i = 0; i < ONE_WIRE_RESET_DELAY; i++)
     {
     };
     OneWire_SetPin(GPIO_PIN_SET);
-    ChangePinDirection(OneWireInputMode);
+//    ChangePinDirection(OneWireInputMode);
 
     uint16_t ResponseTime = 0;
     do
@@ -95,7 +98,7 @@ uint8_t OneWire_CheckPresence(void)
         }
         Timeout--;
     } while (Timeout > 0);
-    ChangePinDirection(OneWireOutputMode);
+//    ChangePinDirection(OneWireOutputMode);
     return (ResponseTime > 0 && Timeout > 0) ? 1 : 0;
 }
 
@@ -126,11 +129,11 @@ uint8_t OneWire_ReadByte(void)
 
 uint8_t OneWire_ReadBit(void)
 {
-    ChangePinDirection(OneWireOutputMode);
+//    ChangePinDirection(OneWireOutputMode);
     OneWire_SetPin(GPIO_PIN_RESET);
     Delay_us(ONE_WIRE_1_US);
     OneWire_SetPin(GPIO_PIN_SET);
-    ChangePinDirection(OneWireInputMode);
+//    ChangePinDirection(OneWireInputMode);
     //  Delay_us(ONE_WIRE_1_US);
 
     if ((OneWireGPIO.GPIOx->IDR & OneWireGPIO.GPIO_Pin) != (uint32_t)GPIO_PIN_RESET)
@@ -143,19 +146,4 @@ uint8_t OneWire_ReadBit(void)
         Delay_us(ONE_WIRE_REST_BIT);
         return 0;
     }
-}
-
-void ChangePinDirection(OneWirePinDirection_t direction)
-{
-    if (direction == OneWireInputMode)
-    {
-        OneWireGPIO.GPIOx->MODER |= GPIO_MODER_MODER3_0;
-        OneWireGPIO.GPIOx->OTYPER |= GPIO_OTYPER_OT_3;
-    }
-    else
-    { // Out
-        OneWireGPIO.GPIOx->OTYPER &= ~GPIO_OTYPER_OT_3;
-        OneWireGPIO.GPIOx->MODER |= GPIO_MODER_MODER3_0;
-    }
-    GPIOA->OSPEEDR |= GPIO_OSPEEDER_OSPEEDR3;
 }

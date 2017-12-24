@@ -5,7 +5,7 @@
 
 uint8_t Transceiver_Data[64];
 uint8_t Transceiver_HUB_ADDR[Transceiver_ADDR_LENGTH] = {0xAB, 0xCD};
-uint8_t Transceiver_RX_ADDR[Transceiver_ADDR_LENGTH]  = {0xF0, 0xFF};
+uint8_t Transceiver_RX_ADDR[Transceiver_ADDR_LENGTH]  = {0xF0, 0xCF};
 
 void Transceiver_Reset(void) {
     CSN_LOW();
@@ -14,6 +14,12 @@ void Transceiver_Reset(void) {
     Delay_us(40);
     Transceiver_WriteStrobe(0x30);
     Delay_us(2);
+}
+
+void Transceiver_SetSyncWord(uint8_t Word0, uint8_t Word1) {
+    dxprintf("SetSyncWord: %2x %2x\n", Word0, Word1);
+    Transceiver_WriteReg(CCxxx0_SYNC0, Word0); //CCxxx0_SYNC0
+    Transceiver_WriteReg(CCxxx0_SYNC1, Word1); //CCxxx0_SYNC1
 }
 
 void Transceiver_TxMode(void) {
@@ -25,16 +31,24 @@ void Transceiver_TxMode(void) {
 }
 
 void Transceiver_RxMode(void) {
+    Transceiver_SetSyncWord(Transceiver_RX_ADDR[0], Transceiver_RX_ADDR[1]);
     Transceiver_WriteStrobe(CCxxx0_SIDLE);
     Transceiver_WriteStrobe(CCxxx0_SFRX);
     Transceiver_WriteStrobe(CCxxx0_SRX);
+    dxprintf("RxMode\n");
+}
+
+void Transceiver_SPWDMode(void) {
+    Transceiver_SetSyncWord(Transceiver_RX_ADDR[0], Transceiver_RX_ADDR[1]);
+    Transceiver_WriteStrobe(CCxxx0_SIDLE);
+    Transceiver_WriteStrobe(CCxxx0_SPWD);
+    CSN_HIGH();
+    dxprintf("SPWDMode\n");
 }
 
 void Transceiver_Configure(void)
 {
     Transceiver_WriteReg(CCxxx0_IOCFG0,0x06); //IOCFG0 - GDO0 Output Pin Configuration
-    Transceiver_WriteReg(CCxxx0_SYNC0, CCxxx0_SYNC_WORD0); //CCxxx0_SYNC0
-    Transceiver_WriteReg(CCxxx0_SYNC1, CCxxx0_SYNC_WORD1); //CCxxx0_SYNC1
     Transceiver_WriteReg(CCxxx0_FIFOTHR,0x47); //FIFOTHR - RX FIFO and TX FIFO Thresholds
     Transceiver_WriteReg(CCxxx0_PKTLEN,0x3E); //PKTLEN - Packet Length
     Transceiver_WriteReg(CCxxx0_PKTCTRL1, 0x08 + (Transceiver_ADD_RSSI_LQI ? 0x04 : 0)); //PKTCTRL1 - Packet Automation Control
@@ -148,7 +162,7 @@ void Transceiver_TxData(uint8_t * Address, uint8_t * Buf, uint8_t Length) {
         }
         dxputs("\n");
 #endif
-            
+    Transceiver_SetSyncWord(Address[0], Address[1]);
     Transceiver_WriteStrobe(CCxxx0_SIDLE);
     Transceiver_WriteStrobe(CCxxx0_SFTX);
     Transceiver_WriteBurstReg(CCxxx0_TXFIFO, tBuf, Length + 1);
@@ -166,12 +180,6 @@ void Transceiver_HandleStatus(void) {
 //        Length = Length == 0 ? 10 : Length;
         if (Length & BYTES_IN_RXFIFO) {
             Transceiver_ReadBurstReg(CCxxx0_RXFIFO, Transceiver_Data, Length + (Transceiver_ADD_RSSI_LQI ? 2 : 0));
-#if configALL_TIME_RX_MODE == 0x01
-            if ((Status & CHIP_STATE_MASK) != 0x01) {
-                Transceiver_RxMode();
-                dxprintf("Transceiver_RxMode 1\n");
-            }
-#endif
 #ifdef _DEBUG
             dxputs("DATA: \n");
             for (uint8_t i = 0; i < Length; i++) {
@@ -195,16 +203,19 @@ void Transceiver_HandleStatus(void) {
             }
             clqi = 0x3F - (lqi & 0x3F);
             dxprintf("crssi: %d, clqi: %d\n", crssi, clqi);
+            UNUSED(clqi);
 #endif
             ProcessData(Transceiver_Data, Length);
         }
     }
-#if configALL_TIME_RX_MODE == 0x01
-    if (((Status & CHIP_STATE_MASK) != 0x01) && ((Status & BYTES_IN_RXFIFO) == 0)) {
+
+    if (((Status & CHIP_STATE_MASK) != 0x10) && ((Status & BYTES_IN_RXFIFO) == 0)) {
+#if SAE_ALL_TIME_RX_MODE == 0x01
         Transceiver_RxMode();
-        dxprintf("Transceiver_RxMode 2\n");
-    }
+#elif SAE_ALL_TIME_SPWD_MODE == 0x01
+        Transceiver_SPWDMode();
 #endif
+    }
 }
 
 uint8_t *Transceiver_GetDeviceAddress(void)

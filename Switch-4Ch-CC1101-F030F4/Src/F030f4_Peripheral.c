@@ -7,7 +7,9 @@
 #define APBCLK 8000000UL
 #define BAUDRATE 115200UL
 
-int32_t tp = 0, tpc = 0;
+int32_t tp = 0;
+
+uint32_t FWInitialAddress = SAE_FW_MEMORY_ADDRESS;
 
 /**
   * @brief  Setup the System.
@@ -207,8 +209,8 @@ void GPIO_Configure(void)
 {
     /* Enable GPIOA, GPIOB, GPIOF Clock */
     RCC->AHBENR |= RCC_AHBENR_GPIOAEN 
-                 | RCC_AHBENR_GPIOBEN; 
-    RCC->AHBENR |= RCC_AHBENR_GPIOFEN;
+                 | RCC_AHBENR_GPIOBEN
+                 | RCC_AHBENR_GPIOFEN;
 
     /* PA2 USART TX. AF, OD */
 
@@ -228,14 +230,15 @@ void GPIO_Configure(void)
         GPIO_MODER_MODER5_1 | GPIO_MODER_MODER6_1 | GPIO_MODER_MODER7_1;
     GPIOA->OTYPER &= ~(GPIO_OTYPER_OT_5 | GPIO_OTYPER_OT_6 | GPIO_OTYPER_OT_7);
 
-    /* PA3 CSN. Output PP */
+    /* PF1 CSN. Output PP */
     GPIOF->BSRR = GPIO_BSRR_BS_1;
     GPIOF->MODER |= GPIO_MODER_MODER1_0;
 //    GPIOA->BSRR = GPIO_BSRR_BS_3;
 
-    /* PA10 SWITCH. Output PP */
-    GPIOA->MODER |= GPIO_MODER_MODER10_0;
-    GPIOA->BSRR = GPIO_BSRR_BR_10;
+    /* PA3 1wire. Output OD */
+    GPIOA->MODER |= GPIO_MODER_MODER3_0;
+    GPIOA->OTYPER |= GPIO_OTYPER_OT_3;
+    GPIOA->OSPEEDR |= GPIO_OSPEEDER_OSPEEDR3;
 
     /* PF0 CC1101_IRQ. Input EXTI */
     GPIOF->MODER &= ~GPIO_MODER_MODER0;
@@ -399,6 +402,93 @@ void USART_SendData(uint8_t *Data, uint16_t Length)
     } while (Length > 0);
 }
 
+void FLASH_Erase(uint32_t EraseAddress, uint8_t Pages)
+{
+    FLASH->KEYR = FLASH_FKEY1;
+    FLASH->KEYR = FLASH_FKEY2;
+
+
+    while (FLASH->SR & FLASH_SR_BSY)
+    {
+        __NOP();
+    };                         // Wait untill memory ready for erase
+    for (uint8_t Page = 0; Page <= Pages; Page++) {
+        FLASH->CR |= FLASH_CR_PER; // Erase one page
+        FLASH->AR |= EraseAddress + (Page * 1024); // Erase address
+        FLASH->CR |= FLASH_CR_STRT;
+        while (FLASH->SR & FLASH_SR_BSY)// Wait untill memory ready
+        {
+            __NOP();
+        }; 
+    }
+
+    FLASH->CR &= ~FLASH_CR_PER;     //This bit must be cleared. In other cases the flash will not work
+    while (FLASH->SR & FLASH_SR_BSY)
+    {
+        __NOP();
+    };
+    FLASH->CR |= FLASH_CR_LOCK; /* Lock the flash back */
+}
+
+unsigned int htoi (uint8_t *ptr, uint8_t Length)
+{
+    unsigned int value = 0;
+    char ch = *ptr;
+    uint8_t i=0;
+    for (i=0; i < Length; i++) {
+        if (ch >= '0' && ch <= '9')
+            value = (value << 4) + (ch - '0');
+        else if (ch >= 'A' && ch <= 'F')
+            value = (value << 4) + (ch - 'A' + 10);
+        else if (ch >= 'a' && ch <= 'f')
+            value = (value << 4) + (ch - 'a' + 10);
+        else
+            return value;
+        ch = *(++ptr);
+    }
+    return value;
+}
+
+uint8_t FWWriteToFlash(uint8_t *cData) {
+    uint32_t Len = htoi(cData, 2);
+    uint32_t Addr = htoi(&cData[2], 4);
+    uint32_t Type = htoi(&cData[6], 2);
+    uint16_t HWord = 0;
+    
+    if (Len == 0x02 && Addr == 0 && Type == 0x04) {      //Set Extended Linear Address Record
+        FWInitialAddress = SAE_FW_MEMORY_ADDRESS | ((uint32_t)htoi(&cData[8], 4)<<16);
+        
+        if (FWInitialAddress >= SAE_FLASH_CFG_ADDR) {
+            FWInitialAddress = SAE_FW_MEMORY_ADDRESS;
+            return 11; //Given address is more than SAE_FLASH_CFG_ADDR
+        }
+    }
+    
+    if (Len > 0 && Type == 0) {              //Write data to flash
+        if (Len > 0x10) {
+            return 12; //Length can't be more than 16 bytes
+        }
+        
+        if ((FWInitialAddress | Addr) >= SAE_FLASH_CFG_ADDR) {
+            return 11;  //Given address is more than SAE_FLASH_CFG_ADDR
+        }
+
+        FLASH->KEYR = FLASH_FKEY1;      // Unlock flash
+        FLASH->KEYR = FLASH_FKEY2;
+        FLASH->CR |= FLASH_CR_PG;       // Allow write
+        while(FLASH->SR & FLASH_SR_BSY) {__NOP();};
+        for (uint8_t i = 0; i < Len; i=i+2) {
+            HWord = htoi(&cData[8+(i*2)], 2) | (htoi(&cData[8+(i*2)+2], 2) << 8);
+            *(__IO uint16_t*)((FWInitialAddress | Addr) + i)  = HWord;
+            while(FLASH->SR & FLASH_SR_BSY) {__NOP();};
+        }
+
+        FLASH->CR |= FLASH_CR_LOCK;
+    }
+    
+    return 0;
+}
+
 void FLASH_WriteData(uint32_t fAddress, uint8_t *Data, uint8_t Size,
                      uint32_t EraseAddress)
 {
@@ -454,7 +544,7 @@ void GOTO_Sleep(void)
 void GOTO_Stop(void)
 {
     RCC->APB1ENR |= RCC_APB1ENR_PWREN;
-#if DEBUG_IN_STOP_MODE == 1
+#if SAE_DEBUG_IN_STOP_MODE == 1
     //Before using DEBUG in Stop mode reduce the frequency in your debugger to lower than 500kHz
     DBGMCU->CR |= DBGMCU_CR_DBG_STOP;
 #endif

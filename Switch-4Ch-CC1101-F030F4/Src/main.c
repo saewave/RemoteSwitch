@@ -4,10 +4,12 @@
 #include "xdebug.h"
 #include "xprintf.h"
 #include "CC1101.h"
+#include "one_wire.h"
+#include "rf_cmd_exec.h"
 #define TX_MODE 0
 
-#if MOVE_VECTOR_TABLE==1
-volatile uint32_t *VectorTable = (volatile uint32_t *)MAIN_PROGRAM_RAM_ADDRESS;
+#if SAE_MOVE_VECTOR_TABLE==1
+volatile uint32_t *VectorTable = (volatile uint32_t *)SAE_MAIN_PROGRAM_RAM_ADDRESS;
 #endif
 
 //uint8_t i;
@@ -24,13 +26,14 @@ void InitPeriph(void)
 //    USART_SendData((uint8_t *)"Test\n", 5);
     dxdev_out(USART_SendChar);
     SPI_Configure();
-//    RTC_Configure();
-//    RTC_Time_Configure(0,0,0);
-//    RTC_Alarm_Configure(0xFF,0xFF,5);
+    OneWire_Init(GPIOA, GPIO_IDR_3);
+    RTC_Configure();
+    RTC_Time_Configure(0,0,0);
+    RTC_Alarm_Configure(0xFF,0xFF,5);
 
 //    dxputs("InitAll Done!\n\n");
 
-//    rfStartup();
+    rfStartup();
 }
 
 int main(void)
@@ -48,10 +51,10 @@ int main(void)
     while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_1) {__NOP();};
     RCC->CR &= ~RCC_CR_HSEON;        //Disable HSE
 */
-#if MOVE_VECTOR_TABLE==1
+#if SAE_MOVE_VECTOR_TABLE==1
     for (i = 0; i < 48; i++)
     {
-        VectorTable[i] = *(__IO uint32_t *)(MAIN_PROGRAM_START_ADDRESS + (i << 2));
+        VectorTable[i] = *(__IO uint32_t *)(SAE_MAIN_PROGRAM_START_ADDRESS + (i << 2));
     }
     SYSCFG->CFGR1 |= SYSCFG_CFGR1_MEM_MODE;
     RCC->APB2ENR |= RCC_APB2ENR_SYSCFGCOMPEN;
@@ -60,7 +63,7 @@ int main(void)
     
     InitPeriph();
 
-    if (configREAD_ADDR_ON_START)
+    if (SAE_READ_ADDR_ON_START)
     {
         readConfig();
     }
@@ -78,7 +81,7 @@ int main(void)
     EXTI_Configure();
 #endif
 
-#if USE_STOP_MODE==1
+#if SAE_USE_STOP_MODE==1
     GOTO_Stop();
     //We should never been here!
     dxputs("What I'm doing here?\n");
@@ -90,29 +93,20 @@ int main(void)
     {
 //        USART_SendData(USART1, (char *)"Test\n", 5);
 //        Delay_ms(1000);
-#if USE_STOP_MODE==0
+#if SAE_USE_STOP_MODE==0
         if (HandleStatus)
         {
             HandleStatus = 0x00;
             Transceiver_HandleStatus();
         }
-/*        Counter++;
-        if (Counter > 800000) {
-            if (Blink == GPIO_BSRR_BR_10)
-                Blink = GPIO_BSRR_BS_10;
-            else
-                Blink = GPIO_BSRR_BR_10;
-            GPIOA->BSRR = Blink;
-            Counter = 0;
-        }*/
 #endif
     }
 }
 
 void uEXTI_IRQHandler(uint32_t Pin)
 {
-#if USE_STOP_MODE==1
-//    nRF24_HandleStatus();
+#if SAE_USE_STOP_MODE==1
+    Transceiver_HandleStatus();
 #else
     HandleStatus = 1;
 #endif
@@ -127,4 +121,8 @@ void uTIM_IRQHandler(void)
 void uRTC_IRQHandler(uint32_t RTC_ISR)
 {
     dxprintf("uRTC_IRQHandler: 0x%h\n", RTC_ISR);
+//    RTC_Time_Configure(0,0,0);
+    uint8_t *Temp;
+    Temp = OneWireReadTemp();
+    rfInternalCallback(Temp, 2);
 }

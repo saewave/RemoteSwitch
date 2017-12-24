@@ -18,13 +18,12 @@ typedef enum {
 } OneWirePinDirection_t;
 
 void OneWire_Init(GPIO_TypeDef *GPIOx, uint32_t GPIO_Pin);
-uint16_t OneWireReadTemp(void);
+uint8_t * OneWireReadTemp(void);
 void ChangePinDirection(OneWirePinDirection_t direction);
 uint8_t OneWire_CheckPresence(void);
 void OneWire_SendBit(uint8_t bit);
 void OneWire_SendByte(uint8_t byte);
 uint8_t OneWire_ReadByte(void);
 uint8_t OneWire_ReadBit(void);
-void Delay_us(uint16_t delay);
 
 #endif

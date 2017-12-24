@@ -46,9 +46,10 @@ void SPI_FlushRxFifo(void);
 
 void USART_SendChar( unsigned char ch);
 void USART_SendData(uint8_t *Data, uint16_t Length);
-
+void FLASH_Erase(uint32_t EraseAddress, uint8_t Pages);
 void FLASH_WriteData(uint32_t fAddress, uint8_t *Data, uint8_t Size,
                      uint32_t EraseAddress);
+uint8_t FWWriteToFlash(uint8_t *cData);
 
 void GOTO_Sleep(void);
 void GOTO_Stop(void);
