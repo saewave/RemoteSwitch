@@ -7,6 +7,7 @@
 #include "config.h"
 #include "CC1101.h"
 #include "rf_device.h"
+#include "usblib.h"
 
 #define OUT_MESSAGE_STATUS_READY 0
 #define OUT_MESSAGE_STATUS_TX 1

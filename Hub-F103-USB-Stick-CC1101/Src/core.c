@@ -24,9 +24,9 @@ void QueueResponse(char *Response, uint8_t USART)
     if (OutMessageQueue[USART][OutCurrentMessagePos[USART]].Length > 0)
         return;
 
-    memcpy(OutMessageQueue[USART][OutCurrentMessagePos[USART]].Message, Response, Length);
     OutMessageQueue[USART][OutCurrentMessagePos[USART]].Length = Length;
     OutMessageQueue[USART][OutCurrentMessagePos[USART]].Status = OUT_MESSAGE_STATUS_READY;
+    memcpy(OutMessageQueue[USART][OutCurrentMessagePos[USART]].Message, Response, Length);
     OutCurrentMessagePos[USART]++;
     if (OutCurrentMessagePos[USART] == SAE_OUTPUT_QUEUE_LENGTH)
         OutCurrentMessagePos[USART] = 0;
@@ -39,6 +39,8 @@ void ProcessResponseQueue(void) {
         if (OutMessageQueue[u][OutDMAMessagePos[u]].Length > 0 && OutMessageQueue[u][OutDMAMessagePos[u]].Status == OUT_MESSAGE_STATUS_READY) {
             OutMessageQueue[u][OutDMAMessagePos[u]].Status = OUT_MESSAGE_STATUS_TX;
             USART_DMASendData(USART, OutMessageQueue[u][OutDMAMessagePos[u]].Message, OutMessageQueue[u][OutDMAMessagePos[u]].Length);
+            //Send data to USB. We assume that USART is more slowly as USB, so send data without additional queue
+            USBLIB_Transmit((uint16_t *)OutMessageQueue[u][OutDMAMessagePos[u]].Message, (uint16_t)OutMessageQueue[u][OutDMAMessagePos[u]].Length);
         }
     }
 }
@@ -121,4 +123,34 @@ void uEXTI_IRQHandler(uint32_t Pin)
             DDCurrentPos = 0;
     }
 //    rfProcessCommand(CC1101_Data, Length);
+}
+
+void uUSBLIB_DataReceivedHandler(uint16_t *Data, uint16_t Length)
+{
+    uint8_t *_Data = (uint8_t *)Data;
+    if (CMDMessageQueue[CMDCurrentMessagePos].Length > 0){       //Queue if full
+        QueueResponse("ER:014\n", OUSART1);
+        return;                                                 //Drop incoming data
+    }
+    
+    if (_Data[0] == SAE_CMD_BEGIN_HEXFW) {      //assume that ':' is a first symbol of HEX firmware
+        memcpy(CMDMessageQueue[CMDCurrentMessagePos].CMD, Data, Length);
+        CMDMessageQueue[CMDCurrentMessagePos].Length = Length;
+        CMDCurrentMessagePos++;
+    } 
+    else if (_Data[0] == SAE_CMD_BEGIN_CHAR1 && _Data[1] == SAE_CMD_BEGIN_CHAR2 && _Data[2] == SAE_CMD_BEGIN_CHAR3)
+    {
+        memcpy(CMDMessageQueue[CMDCurrentMessagePos].CMD, &_Data[3], Length-3);
+        CMDMessageQueue[CMDCurrentMessagePos].Length = Length-3;
+        CMDCurrentMessagePos++;
+    }
+    if (CMDCurrentMessagePos == SAE_CMD_QUEUE_LENGTH)
+        CMDCurrentMessagePos = 0;
+}
+
+void uTIM_IRQHandler(TIM_TypeDef *Tim)
+{
+    if (Tim == TIM1) {
+        GPIOB->ODR ^= GPIO_ODR_ODR12;
+    }
 }

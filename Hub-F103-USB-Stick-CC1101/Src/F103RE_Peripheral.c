@@ -21,10 +21,11 @@ void RCC_Configure(void)
     while ((RCC->CR & RCC_CR_PLLON)) {__NOP();};
     RCC->CFGR &= ~0x3C0000;
     RCC->CFGR |= RCC_CFGR_PLLMULL6;//Set Pll Mul to 6
-    RCC->CFGR |= RCC_CFGR_USBPRE;
+//    RCC->CFGR |= RCC_CFGR_USBPRE;
+    RCC->CFGR |= RCC_CFGR_PLLSRC;
     RCC->CR |= RCC_CR_PLLON;
     while (!(RCC->CR & RCC_CR_PLLON)) {__NOP();};
-    RCC->CFGR |= RCC_CFGR_SW_1;      //Change System Clock to HSI
+    RCC->CFGR |= RCC_CFGR_SW_1;      //Change System Clock to PLL
     while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_1) {__NOP();};
 //    RCC->CR &= ~RCC_CR_HSEON;        //Disable HSE
 }
@@ -211,6 +212,10 @@ void GPIO_Configure(void)
     /* PB12 - LED. Output PP */
     GPIOB->CRH |= GPIO_CRH_MODE12_0;
     GPIOB->CRH &= ~GPIO_CRH_CNF12;
+    
+    /* PB13 - USB Enable. Output PP */
+    GPIOB->CRH |= GPIO_CRH_MODE13_0;
+    GPIOB->CRH &= ~GPIO_CRH_CNF13;
 
     /* PC13 - CSN. Output PP */
     GPIOC->CRH |= GPIO_CRH_MODE13_0;
@@ -247,29 +252,18 @@ void WWDG_Update(void)
 
 void TIM_Configure(void)
 {
-    /*    RCC->APB1ENR |= RCC_APB1ENR_TIM14EN;
-
-    //  TIM14->CR1 |= TIM_CR1_CKD_1;
-    TIM14->DIER |= TIM_DIER_UIE;
-    TIM14->PSC = 8000;
-    TIM14->ARR = 6000;
-    TIM14->CNT = 1;
-
-    NVIC_EnableIRQ(TIM14_IRQn);
-    NVIC_SetPriority(TIM14_IRQn, 0);
-
-    TIM14->CR1 |= TIM_CR1_CEN;*/
+    RCC->APB2ENR |= RCC_APB2ENR_TIM1EN;
+    TIM1->PSC = 1500 - 1;
+    TIM1->ARR = 48000 - 1;
+    TIM1->DIER |= TIM_DIER_UIE;
+    TIM1->CR1 = TIM_CR1_CEN | TIM_CR1_ARPE;
+    NVIC_SetPriority(TIM1_UP_IRQn, 15);
+    NVIC_EnableIRQ(TIM1_UP_IRQn);
 }
 
 uint32_t DWT_Get(void)
 {
   return DWT->CYCCNT;
-}
-
-void DWT_Delay(uint32_t us) // microseconds
-{
-  int32_t tp = DWT_Get() + us * (SYS_FREQUENCY/1000000);
-  while (((int32_t)DWT_Get() - tp) < 0);
 }
 
 void SPI_SendData(SPI_TypeDef *SPI, uint8_t *Data, uint16_t Length)
@@ -567,6 +561,12 @@ void EXTI4_IRQHandler(void)
     uEXTI_IRQHandler(PR);
 }
 
+void TIM1_UP_IRQHandler() {
+    TIM1->SR &= ~TIM_SR_UIF;
+
+    uTIM_IRQHandler(TIM1);
+}
+
 void TIM14_IRQHandler(void)
 {
     /*    TIM14->SR &= ~TIM_SR_UIF;
@@ -588,10 +588,7 @@ void RTC_IRQHandler(void)
 }
 
 void Delay_ms(uint32_t Delay) {
-    /*
-    THIS DELAY IS DEPRECATED WITH FreeRTOS!
-    PLEASE USE vTaskDelay INSTEAD!
-    */
+    /* Hmm. Looks like we do not need delay at all ;) */
 }
 
 void Delay_us(uint32_t Delay) {
@@ -608,7 +605,7 @@ __weak void uEXTI_IRQHandler(uint32_t Pin)
    */
 }
 
-__weak void uTIM_IRQHandler(void)
+__weak void uTIM_IRQHandler(TIM_TypeDef *Tim)
 {
     /* NOTE: This function Should not be modified, when the callback is needed,
            the uTIM_IRQHandler could be implemented in the user file

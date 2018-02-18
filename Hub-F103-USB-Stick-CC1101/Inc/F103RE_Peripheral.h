@@ -71,7 +71,7 @@ void GOTO_Sleep(void);
 void GOTO_Stop(void);
 
 void uEXTI_IRQHandler(uint32_t Pin);
-void uTIM_IRQHandler(void);
+void uTIM_IRQHandler(TIM_TypeDef *Tim);
 void uRTC_IRQHandler(uint32_t RTC_ISR);
 void uUSART_IRQHandler(USART_TypeDef * USART, uint32_t SR, uint8_t * Data, uint8_t Length);
 void Delay_ms(uint32_t Delay);

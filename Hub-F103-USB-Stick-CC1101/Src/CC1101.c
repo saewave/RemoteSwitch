@@ -32,6 +32,8 @@ void CC1101_RxMode(void) {
 
 void CC1101_Configure(void)
 {
+
+    uint8_t PATable[8] = {0xC0, 0xC0, 0xC0, 0xC0, 0xC0, 0xC0, 0xC0, 0xC0};
     CC1101_WriteReg(CCxxx0_IOCFG0,0x06); //IOCFG0 - GDO0 Output Pin Configuration
     CC1101_WriteReg(CCxxx0_FIFOTHR,0x47); //FIFOTHR - RX FIFO and TX FIFO Thresholds
     CC1101_WriteReg(CCxxx0_PKTLEN,0x3E); //PKTLEN - Packet Length
@@ -43,12 +45,12 @@ void CC1101_Configure(void)
     CC1101_WriteReg(CCxxx0_FREQ2,0x10); //FREQ2 - Frequency Control Word, High Byte
     CC1101_WriteReg(CCxxx0_FREQ1,0xA7); //FREQ1 - Frequency Control Word, Middle Byte
     CC1101_WriteReg(CCxxx0_FREQ0,0x62); //FREQ0 - Frequency Control Word, Low Byte
-    CC1101_WriteReg(CCxxx0_MDMCFG4,0xF9); //MDMCFG4 - Modem Configuration
-    CC1101_WriteReg(CCxxx0_MDMCFG3,0x93); //MDMCFG3 - Modem Configuration
+    CC1101_WriteReg(CCxxx0_MDMCFG4,0xF6); //MDMCFG4 - Modem Configuration
+    CC1101_WriteReg(CCxxx0_MDMCFG3,0x43); //MDMCFG3 - Modem Configuration
     CC1101_WriteReg(CCxxx0_MDMCFG2,0x43); //MDMCFG2 - Modem Configuration
     CC1101_WriteReg(CCxxx0_DEVIATN,0x15); //DEVIATN - Modem Deviation Setting
-    CC1101_WriteReg(CCxxx0_MCSM0,0x18); //MCSM0 - Main Radio Control State Machine Configuration
     CC1101_WriteReg(CCxxx0_MCSM1,0x0F); //MCSM1 - Main Radio Control State Machine Configuration
+    CC1101_WriteReg(CCxxx0_MCSM0,0x18); //MCSM0 - Main Radio Control State Machine Configuration
     CC1101_WriteReg(CCxxx0_FOCCFG,0x16); //FOCCFG - Frequency Offset Compensation Configuration
     CC1101_WriteReg(CCxxx0_WORCTRL,0xFB); //WORCTRL - Wake On Radio Control
     CC1101_WriteReg(CCxxx0_FSCAL3,0xE9); //FSCAL3 - Frequency Synthesizer Calibration
@@ -58,6 +60,8 @@ void CC1101_Configure(void)
     CC1101_WriteReg(CCxxx0_TEST2,0x81); //TEST2 - Various Test Settings
     CC1101_WriteReg(CCxxx0_TEST1,0x35); //TEST1 - Various Test Settings
     CC1101_WriteReg(CCxxx0_TEST0,0x09); //TEST0 - Various Test Settings
+
+    CC1101_WriteBurstReg(CCxxx0_PATABLE, PATable, 8);
 }
 
 void CC1101_WriteReg(uint8_t Reg, uint8_t Value) {

@@ -4,6 +4,7 @@
 #include "rf_device.h"
 #include "xdebug.h"
 #include "core.h"
+#include "usblib.h"
 
 int main (void) {
     
@@ -14,11 +15,14 @@ int main (void) {
 
     SPI_Configure();
     USART_Configure();
+    TIM_Configure();
+    USBLIB_Init();
+    GPIOB->ODR |= GPIO_ODR_ODR13; //USB UP
     
     CC1101_Reset();
     CC1101_Configure();
     CC1101_RxMode();
-    
+
     rfLoadDevices();
     rfListDevices();
 
