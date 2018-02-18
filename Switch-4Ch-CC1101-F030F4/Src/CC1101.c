@@ -48,6 +48,7 @@ void Transceiver_SPWDMode(void) {
 
 void Transceiver_Configure(void)
 {
+    uint8_t PATable[8] = {0xC0, 0xC0, 0xC0, 0xC0, 0xC0, 0xC0, 0xC0, 0xC0};
     Transceiver_WriteReg(CCxxx0_IOCFG0,0x06); //IOCFG0 - GDO0 Output Pin Configuration
     Transceiver_WriteReg(CCxxx0_FIFOTHR,0x47); //FIFOTHR - RX FIFO and TX FIFO Thresholds
     Transceiver_WriteReg(CCxxx0_PKTLEN,0x3E); //PKTLEN - Packet Length
@@ -59,8 +60,8 @@ void Transceiver_Configure(void)
     Transceiver_WriteReg(CCxxx0_FREQ2,0x10); //FREQ2 - Frequency Control Word, High Byte
     Transceiver_WriteReg(CCxxx0_FREQ1,0xA7); //FREQ1 - Frequency Control Word, Middle Byte
     Transceiver_WriteReg(CCxxx0_FREQ0,0x62); //FREQ0 - Frequency Control Word, Low Byte
-    Transceiver_WriteReg(CCxxx0_MDMCFG4,0xF9); //MDMCFG4 - Modem Configuration
-    Transceiver_WriteReg(CCxxx0_MDMCFG3,0x93); //MDMCFG3 - Modem Configuration
+    Transceiver_WriteReg(CCxxx0_MDMCFG4,0xF6); //MDMCFG4 - Modem Configuration
+    Transceiver_WriteReg(CCxxx0_MDMCFG3,0x43); //MDMCFG3 - Modem Configuration
     Transceiver_WriteReg(CCxxx0_MDMCFG2,0x43); //MDMCFG2 - Modem Configuration
     Transceiver_WriteReg(CCxxx0_DEVIATN,0x15); //DEVIATN - Modem Deviation Setting
     Transceiver_WriteReg(CCxxx0_MCSM0,0x18); //MCSM0 - Main Radio Control State Machine Configuration
@@ -74,6 +75,7 @@ void Transceiver_Configure(void)
     Transceiver_WriteReg(CCxxx0_TEST2,0x81); //TEST2 - Various Test Settings
     Transceiver_WriteReg(CCxxx0_TEST1,0x35); //TEST1 - Various Test Settings
     Transceiver_WriteReg(CCxxx0_TEST0,0x09); //TEST0 - Various Test Settings
+    Transceiver_WriteBurstReg(CCxxx0_PATABLE, PATable, 8);
 }
 
 void Transceiver_WriteReg(uint8_t Reg, uint8_t Value) {
