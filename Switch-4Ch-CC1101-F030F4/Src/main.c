@@ -20,7 +20,7 @@ uint32_t Blink = GPIO_BSRR_BR_10;
 void InitPeriph(void)
 {
     CRC_Configure();
-    TIM_Configure();
+//    TIM_Configure();
     GPIO_Configure();
     USART_Configure();
 //    USART_SendData((uint8_t *)"Test\n", 5);
