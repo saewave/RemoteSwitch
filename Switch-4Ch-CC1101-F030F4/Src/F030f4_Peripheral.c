@@ -273,7 +273,7 @@ void TIM_Configure(void)
     TIM17->ARR = 0xFFFF;
     TIM17->CNT = 0;
 
-//    TIM17->CR1 |= TIM_CR1_CEN;
+    TIM17->CR1 |= TIM_CR1_CEN;
 }
 
 void SPI_SendData(uint8_t *Data, uint16_t Length)
