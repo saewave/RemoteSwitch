@@ -15,17 +15,17 @@
  * You should have received a copy of the GNU General Public License 
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
 #include "rf_cmd_exec.h"
+#include "core.h"
 #include "rf_cmd.h"
 #include "xdebug.h"
-#include "core.h"
 
 void rfCmdWriteData(uint8_t *Data, uint8_t Length)
 {
     //******** Put your code here ********
 
-    tUpdateChannelSettings* _tmp = (tUpdateChannelSettings*) Data;
+    tUpdateChannelSettings *_tmp = (tUpdateChannelSettings *)Data;
     SetParamsToChannel(_tmp);
     SendCommandToHub(rfCMD_R_DATA, Data, Length);
 }
@@ -40,7 +40,7 @@ void rfCmdReadData(uint8_t *Data, uint8_t Length, uint8_t *ResponseData, uint8_t
 void rfCmdWriteConfig(uint8_t *Data, uint8_t Length)
 {
     //******** Put your code here ********
-    tUpdateChannelSettings* _tmp = (tUpdateChannelSettings*) &Data[1];
+    tUpdateChannelSettings *_tmp = (tUpdateChannelSettings *)&Data[1];
     SetParamsToChannel(_tmp);
 }
 
@@ -62,7 +62,7 @@ void rfStartup(void)
 {
     //This method called rigth after initialization.
     //******** Put your code here ********
-    
+
     uint8_t Param = 0x01;
     SendCommandToHub(rfCMD_PING, &Param, 1);
     SwitchToState(STATE_GND);

@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License 
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
 #ifndef __Peripheral_H
 #define __Peripheral_H
 
@@ -330,14 +330,13 @@ void GPIO_Configure(void)
     GPIOA->BSRR = GPIO_BSRR_BR_10 | GPIO_BSRR_BR_11 | GPIO_BSRR_BR_12;
     GPIOA->MODER |= GPIO_MODER_MODER10_0 | GPIO_MODER_MODER11_0 | GPIO_MODER_MODER12_0;
 
-    
     // PB6 USART TX. AF, Output OD
 
     GPIOB->MODER |= GPIO_MODER_MODER6_1;
     GPIOB->OTYPER |= GPIO_OTYPER_OT_6;
     GPIOB->PUPDR |= GPIO_PUPDR_PUPDR6_0;
     //GPIOB->AFR[0] |= 0x0000;
-/*
+    /*
     // PA9 USART TX. AF, PP
 //    GPIOA->MODER |= GPIO_MODER_MODER9_1;
 //    GPIOA->OTYPER &= ~GPIO_OTYPER_OT_9;
@@ -408,16 +407,14 @@ void SPI_SendData(SPI_TypeDef *SPI, uint8_t *Data, uint16_t Length)
     uint16_t Timeout = 1000;
     uint8_t  Pos     = 0;
 
-    while (Length > Pos)
-    {
-        Timeout = 1000;
+    while (Length > Pos) {
+        Timeout                     = 1000;
         *((__IO uint8_t *)&SPI->DR) = Data[Pos];
         Pos++;
         while (!(SPI->SR & SPI_SR_TXE)) /* Wait until TXE flag is set to send data */
         {
             Timeout--;
-            if (Timeout == 0)
-            {
+            if (Timeout == 0) {
                 break;
             }
         }
@@ -454,19 +451,16 @@ void SPI_ReadData(SPI_TypeDef *SPI, uint8_t *Data, uint16_t Length, uint8_t Dumm
     SPI_FlushRxFifo(SPI);
 
     while (Length > 0) {
-        while (!SPI->SR & SPI_SR_TXE)
-        {
+        while (!SPI->SR & SPI_SR_TXE) {
             __NOP();
         }
 
         *((__IO uint8_t *)&SPI->DR) = Dummy;
 
-        while (!(SPI->SR & SPI_SR_TXE))
-        {
+        while (!(SPI->SR & SPI_SR_TXE)) {
             __NOP();
         };
-        while (!(SPI->SR & SPI_SR_RXNE))
-        {
+        while (!(SPI->SR & SPI_SR_RXNE)) {
             __NOP();
         };
         (*Data++) = *(__IO uint8_t *)&SPI->DR;

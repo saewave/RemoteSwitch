@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License 
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
 #include "SI446x.h"
 #include "F030C8_Peripheral.h"
 #include "SI4463.h"
@@ -28,8 +28,8 @@ uint8_t          Transceiver_DEVICE_DISCOVER_ADDR[Transceiver_ADDR_LENGTH] = {0x
 uint8_t          Transceiver_RX_ADDR[Transceiver_ADDR_LENGTH]              = {0xF0, 0xCF}; //This param should be the same as Transceiver_DEVICE_DISCOVER_ADDR!!
 volatile uint8_t Transceiver_TransmiterState                               = Transceiver_TR_STATE_IDLE;
 volatile uint8_t Configured                                                = 0;
-volatile uint8_t AllowOperate = 1;
-uint8_t Registers[4] = {0};
+volatile uint8_t AllowOperate                                              = 1;
+uint8_t          Registers[4]                                              = {0};
 
 void Transceiver_RxMode(void)
 {
@@ -47,11 +47,12 @@ void Transceiver_RxMode(void)
     Transceiver_WriteCommand(Transceiver_START_RX, Params, 0);
 }
 
-void Transceiver_ClearFifo(uint8_t Fifo) {
+void Transceiver_ClearFifo(uint8_t Fifo)
+{
     Transceiver_ReadRegs(Transceiver_FIFO_INFO, &Fifo, 1, NULL, 0, 1);
 }
 
-void    Transceiver_Configure(void)
+void Transceiver_Configure(void)
 {
     const uint8_t radioConfiguration[] = RADIO_CONFIGURATION_DATA_ARRAY;
     uint16_t      pos                  = 0;
@@ -213,10 +214,10 @@ void Transceiver_TxData(uint8_t *Address, uint8_t *Buf, uint8_t Length)
     } else {
         AllowOperate = 0;
     }
-    
+
     uint8_t Params = 0x01;
     uint8_t tBuf[Length + 1];
-    tBuf[0] = Length+2;
+    tBuf[0] = Length + 2;
     if (Length > 0)
         memcpy(&tBuf[1], Buf, Length);
     Transceiver_ChangeState(Transceiver_STATE_READY);
@@ -234,7 +235,8 @@ void Transceiver_SetSyncWord(uint8_t Word0, uint8_t Word1)
     Transceiver_WriteCommand(0x11, config, 8);
 }
 
-void Transceiver_ReadFRR(uint8_t Reg, uint8_t Length, uint8_t * Registers) {
+void Transceiver_ReadFRR(uint8_t Reg, uint8_t Length, uint8_t *Registers)
+{
     CSN_LOW();
     Delay_us(5);
     SPI_SendData(SPI1, &Reg, 1);
@@ -245,12 +247,12 @@ void Transceiver_ReadFRR(uint8_t Reg, uint8_t Length, uint8_t * Registers) {
 
 uint8_t Transceiver_HandleStatus(void)
 {
-    uint8_t Params = 0x01;
+    uint8_t Params        = 0x01;
     uint8_t ClearRX       = 0;
     uint8_t PacketInfo[2] = {0, 0};
     uint8_t PHStatus[2]   = {0};
-    uint8_t FIFOStatus[2]   = {0};
-    
+    uint8_t FIFOStatus[2] = {0};
+
     Transceiver_ReadRegs(Transceiver_GET_PH_STATUS, NULL, 0, PHStatus, 2, 1);
 
     if (PHStatus[Transceiver_PH_STATUS_PH_PEND] & Transceiver_PH_STATUS_PACKET_RX_PEND) {
@@ -259,7 +261,7 @@ uint8_t Transceiver_HandleStatus(void)
             Transceiver_ReadRXBuf(Transceiver_Data, PacketInfo[1]);
             Transceiver_DataLength = PacketInfo[1];
             ProcessData(Transceiver_Data, Transceiver_DataLength - Transceiver_PH_CRC_LENGTH);
-//            Transceiver_RxMode();
+            //            Transceiver_RxMode();
         } else {
             ClearRX = 1;
         }
@@ -269,24 +271,24 @@ uint8_t Transceiver_HandleStatus(void)
         Params = 0;
         Transceiver_ReadRegs(Transceiver_FIFO_INFO, &Params, 1, FIFOStatus, 2, 1);
         Params = 1; //Clear TX FIFO
-        Transceiver_ReadRegs(Transceiver_FIFO_INFO, &Params, 1, NULL, 0, 1); 
-        #if SAE_ALL_TIME_RX_MODE == 1
-            Transceiver_RxMode();
-        #endif
+        Transceiver_ReadRegs(Transceiver_FIFO_INFO, &Params, 1, NULL, 0, 1);
+#if SAE_ALL_TIME_RX_MODE == 1
+        Transceiver_RxMode();
+#endif
         AllowOperate = 1;
     }
-    
+
     if (PHStatus[Transceiver_PH_STATUS_PH_PEND] & Transceiver_PH_STATUS_RX_FIFO_ALMOST_FULL_PEND) {
         Params = 0x02; //Clear RX FIFO. Generally, this should not happen, but for some safe side...
         Transceiver_ReadRegs(Transceiver_FIFO_INFO, &Params, 1, NULL, 0, 1);
-        #if SAE_ALL_TIME_RX_MODE == 1
-            Transceiver_RxMode();
-        #endif
+#if SAE_ALL_TIME_RX_MODE == 1
+        Transceiver_RxMode();
+#endif
         AllowOperate = 1;
     }
-    
+
     if (PHStatus[Transceiver_PH_STATUS_PH_PEND] & Transceiver_PH_STATUS_PACKET_CRC_ERROR_PEND) {
-        Transceiver_ReadRegs(Transceiver_FIFO_INFO, &Params, 1, FIFOStatus, 2, 1);               //Read data about FIFOs
+        Transceiver_ReadRegs(Transceiver_FIFO_INFO, &Params, 1, FIFOStatus, 2, 1); //Read data about FIFOs
         if (FIFOStatus[0] > 0) {
             uint8_t BrokenRX[65] = {0};
             Transceiver_ReadRXBuf(BrokenRX, FIFOStatus[0]);
