@@ -10951,7 +10951,7 @@ Source: http://www.fairchildsemi.com/ds/FD/FDN360P.pdf</description>
 <instance part="C8" gate="G$1" x="83.82" y="109.22" rot="R180"/>
 <instance part="C9" gate="G$1" x="91.44" y="109.22" rot="R180"/>
 <instance part="C10" gate="G$1" x="99.06" y="109.22" rot="R180"/>
-<instance part="JP3" gate="G$1" x="147.32" y="73.66"/>
+<instance part="JP3" gate="G$1" x="147.32" y="71.12"/>
 <instance part="JP4" gate="G$1" x="147.32" y="78.74"/>
 <instance part="JP5" gate="G$1" x="147.32" y="86.36"/>
 <instance part="JP6" gate="G$1" x="147.32" y="91.44"/>
@@ -10971,7 +10971,10 @@ Source: http://www.fairchildsemi.com/ds/FD/FDN360P.pdf</description>
 <instance part="CM3" gate="G$1" x="-35.56" y="177.8" rot="R180"/>
 <instance part="LM3" gate="G$1" x="-25.4" y="185.42" rot="R90"/>
 <instance part="CC1" gate="G$1" x="43.18" y="190.5" rot="R90"/>
-<instance part="LR1" gate="G$1" x="129.54" y="193.04"/>
+<instance part="LR1" gate="G$1" x="129.54" y="193.04" smashed="yes">
+<attribute name="NAME" x="134.62" y="195.58" size="1.778" layer="95" rot="R90"/>
+<attribute name="VALUE" x="128.524" y="190.246" size="1.778" layer="96" rot="R90"/>
+</instance>
 <instance part="LM2" gate="G$1" x="66.04" y="180.34" rot="R90"/>
 <instance part="CR2" gate="G$1" x="114.3" y="190.5" rot="R90"/>
 <instance part="LR2" gate="G$1" x="116.84" y="200.66" rot="R90"/>
@@ -10983,10 +10986,10 @@ Source: http://www.fairchildsemi.com/ds/FD/FDN360P.pdf</description>
 <instance part="JP2" gate="G$1" x="170.18" y="93.98"/>
 <instance part="JP7" gate="G$1" x="170.18" y="101.6"/>
 <instance part="JP8" gate="G$1" x="170.18" y="106.68"/>
-<instance part="JP1" gate="G$1" x="175.26" y="81.28"/>
-<instance part="JP9" gate="G$1" x="175.26" y="76.2"/>
-<instance part="JP10" gate="G$1" x="175.26" y="71.12"/>
-<instance part="JP11" gate="G$1" x="175.26" y="66.04"/>
+<instance part="JP1" gate="G$1" x="180.34" y="81.28"/>
+<instance part="JP9" gate="G$1" x="180.34" y="73.66"/>
+<instance part="JP10" gate="G$1" x="180.34" y="66.04"/>
+<instance part="JP11" gate="G$1" x="180.34" y="55.88"/>
 <instance part="J1" gate="G$1" x="-53.34" y="187.96" rot="R180"/>
 <instance part="Q3" gate="G$1" x="27.94" y="58.42"/>
 <instance part="R5" gate="G$1" x="15.24" y="60.96" rot="R180"/>
@@ -11034,7 +11037,7 @@ Source: http://www.fairchildsemi.com/ds/FD/FDN360P.pdf</description>
 <segment>
 <pinref part="JP2" gate="G$1" pin="1"/>
 <wire x1="167.64" y1="93.98" x2="160.02" y2="93.98" width="0.1524" layer="91"/>
-<label x="160.02" y="93.98" size="1.778" layer="95"/>
+<label x="154.94" y="93.98" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="GND" class="0">
@@ -11195,14 +11198,17 @@ Source: http://www.fairchildsemi.com/ds/FD/FDN360P.pdf</description>
 <segment>
 <pinref part="CM5" gate="G$1" pin="2"/>
 <wire x1="154.94" y1="132.08" x2="154.94" y2="129.54" width="0.1524" layer="91"/>
+<label x="154.94" y="124.46" size="1.778" layer="95" rot="R90"/>
 </segment>
 <segment>
 <pinref part="CM6" gate="G$1" pin="2"/>
 <wire x1="162.56" y1="132.08" x2="162.56" y2="129.54" width="0.1524" layer="91"/>
+<label x="162.56" y="124.46" size="1.778" layer="95" rot="R90"/>
 </segment>
 <segment>
 <pinref part="CM7" gate="G$1" pin="2"/>
 <wire x1="170.18" y1="132.08" x2="170.18" y2="129.54" width="0.1524" layer="91"/>
+<label x="170.18" y="124.46" size="1.778" layer="95" rot="R90"/>
 </segment>
 <segment>
 <pinref part="U$1" gate="G$1" pin="SDN"/>
@@ -11274,7 +11280,7 @@ Source: http://www.fairchildsemi.com/ds/FD/FDN360P.pdf</description>
 <segment>
 <pinref part="JP8" gate="G$1" pin="1"/>
 <wire x1="167.64" y1="106.68" x2="160.02" y2="106.68" width="0.1524" layer="91"/>
-<label x="160.02" y="106.68" size="1.778" layer="95"/>
+<label x="154.94" y="106.68" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="SWCLK" class="0">
@@ -11286,7 +11292,7 @@ Source: http://www.fairchildsemi.com/ds/FD/FDN360P.pdf</description>
 <segment>
 <pinref part="JP7" gate="G$1" pin="1"/>
 <wire x1="167.64" y1="101.6" x2="160.02" y2="101.6" width="0.1524" layer="91"/>
-<label x="160.02" y="101.6" size="1.778" layer="95"/>
+<label x="154.94" y="101.6" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="USART2_RX" class="0">
@@ -11304,8 +11310,8 @@ Source: http://www.fairchildsemi.com/ds/FD/FDN360P.pdf</description>
 <net name="USART2_TX" class="0">
 <segment>
 <pinref part="JP3" gate="G$1" pin="1"/>
-<wire x1="147.32" y1="73.66" x2="137.16" y2="73.66" width="0.1524" layer="91"/>
-<label x="142.24" y="73.66" size="1.778" layer="95" rot="R180"/>
+<wire x1="147.32" y1="71.12" x2="137.16" y2="71.12" width="0.1524" layer="91"/>
+<label x="142.24" y="71.12" size="1.778" layer="95" rot="R180"/>
 </segment>
 <segment>
 <pinref part="IC1" gate="PORTA_L" pin="PA2"/>
@@ -11568,7 +11574,7 @@ Source: http://www.fairchildsemi.com/ds/FD/FDN360P.pdf</description>
 <segment>
 <pinref part="U$2" gate="G$1" pin="VC1"/>
 <wire x1="2.54" y1="190.5" x2="-5.08" y2="190.5" width="0.1524" layer="91"/>
-<label x="-7.62" y="190.5" size="1.778" layer="95"/>
+<label x="-5.08" y="187.96" size="1.778" layer="95"/>
 </segment>
 <segment>
 <pinref part="U$1" gate="G$1" pin="GPIO3"/>
@@ -11580,7 +11586,7 @@ Source: http://www.fairchildsemi.com/ds/FD/FDN360P.pdf</description>
 <segment>
 <pinref part="U$2" gate="G$1" pin="VC2"/>
 <wire x1="2.54" y1="180.34" x2="-5.08" y2="180.34" width="0.1524" layer="91"/>
-<label x="-7.62" y="180.34" size="1.778" layer="95"/>
+<label x="-5.08" y="177.8" size="1.778" layer="95"/>
 </segment>
 <segment>
 <pinref part="U$1" gate="G$1" pin="GPIO2"/>
@@ -11605,14 +11611,17 @@ Source: http://www.fairchildsemi.com/ds/FD/FDN360P.pdf</description>
 <segment>
 <pinref part="CM5" gate="G$1" pin="1"/>
 <wire x1="154.94" y1="139.7" x2="154.94" y2="142.24" width="0.1524" layer="91"/>
+<label x="154.94" y="142.24" size="1.778" layer="95" rot="R90"/>
 </segment>
 <segment>
 <pinref part="CM6" gate="G$1" pin="1"/>
 <wire x1="162.56" y1="139.7" x2="162.56" y2="142.24" width="0.1524" layer="91"/>
+<label x="162.56" y="142.24" size="1.778" layer="95" rot="R90"/>
 </segment>
 <segment>
 <pinref part="CM7" gate="G$1" pin="1"/>
 <wire x1="170.18" y1="139.7" x2="170.18" y2="142.24" width="0.1524" layer="91"/>
+<label x="170.18" y="142.24" size="1.778" layer="95" rot="R90"/>
 </segment>
 <segment>
 <pinref part="IC2" gate="G$1" pin="VO"/>
@@ -11749,8 +11758,8 @@ Source: http://www.fairchildsemi.com/ds/FD/FDN360P.pdf</description>
 </segment>
 <segment>
 <pinref part="JP11" gate="G$1" pin="1"/>
-<wire x1="175.26" y1="66.04" x2="170.18" y2="66.04" width="0.1524" layer="91"/>
-<label x="170.18" y="66.04" size="1.778" layer="95"/>
+<wire x1="180.34" y1="55.88" x2="170.18" y2="55.88" width="0.1524" layer="91"/>
+<label x="165.1" y="55.88" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="TEST-2" class="0">
@@ -11761,8 +11770,8 @@ Source: http://www.fairchildsemi.com/ds/FD/FDN360P.pdf</description>
 </segment>
 <segment>
 <pinref part="JP10" gate="G$1" pin="1"/>
-<wire x1="175.26" y1="71.12" x2="170.18" y2="71.12" width="0.1524" layer="91"/>
-<label x="170.18" y="71.12" size="1.778" layer="95"/>
+<wire x1="180.34" y1="66.04" x2="170.18" y2="66.04" width="0.1524" layer="91"/>
+<label x="165.1" y="66.04" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="TEST-3" class="0">
@@ -11773,8 +11782,8 @@ Source: http://www.fairchildsemi.com/ds/FD/FDN360P.pdf</description>
 </segment>
 <segment>
 <pinref part="JP9" gate="G$1" pin="1"/>
-<wire x1="175.26" y1="76.2" x2="170.18" y2="76.2" width="0.1524" layer="91"/>
-<label x="170.18" y="76.2" size="1.778" layer="95"/>
+<wire x1="180.34" y1="73.66" x2="170.18" y2="73.66" width="0.1524" layer="91"/>
+<label x="165.1" y="73.66" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="TEST-4" class="0">
@@ -11785,8 +11794,8 @@ Source: http://www.fairchildsemi.com/ds/FD/FDN360P.pdf</description>
 </segment>
 <segment>
 <pinref part="JP1" gate="G$1" pin="1"/>
-<wire x1="175.26" y1="81.28" x2="170.18" y2="81.28" width="0.1524" layer="91"/>
-<label x="170.18" y="81.28" size="1.778" layer="95"/>
+<wire x1="180.34" y1="81.28" x2="170.18" y2="81.28" width="0.1524" layer="91"/>
+<label x="165.1" y="81.28" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="N$19" class="0">
